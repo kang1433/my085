@@ -152,9 +152,9 @@ void SysTick_Handler(void)	//滴答定时器1MS
 	else 
 		LowP_Time = 0;
 	
-	if((State.CH_LDuty_S) && (CH_LowDuty_Time < LDUTYTIME))
+	if((State.CH_LDuty_S) && (CH_LowDuty_Time < CHLDUTYTIME))
 		CH_LowDuty_Time++;
-	if((State.SUN_LDuty_S) && (SUN_LowDuty_Time < LDUTYTIME))
+	if((State.SUN_LDuty_S) && (SUN_LowDuty_Time < SUNLDUTYTIME))
 		SUN_LowDuty_Time++;
 	
 	/*按键按下时间计时*/

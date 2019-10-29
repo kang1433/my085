@@ -877,7 +877,7 @@ void Check_Charge_Sta(void)
 					State.CH_LDuty_S = 0;
 					CH_LowDuty_Time = 0;
 				}
-				if(CH_LowDuty_Time >= LDUTYTIME)
+				if(CH_LowDuty_Time >= CHLDUTYTIME)
 				{
 					State.CH_LDuty_S = 0;
 					CH_LowDuty_Time = 0;
@@ -978,7 +978,7 @@ void Check_Charge_Sta(void)
 					State.SUN_LDuty_S = 0;
 					SUN_LowDuty_Time = 0;
 				}
-				if(SUN_LowDuty_Time >= LDUTYTIME)
+				if(SUN_LowDuty_Time >= SUNLDUTYTIME)
 				{
 					State.SUN_LDuty_S = 0;
 					SUN_LowDuty_Time = 0;
