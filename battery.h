@@ -58,7 +58,7 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define SOC_40		400
 #define SOC_60		600
 #define SOC_80		800
-#define SOC_90		900
+#define SOC_99		990
 #define SOC_100		999
 /******电量电压定义******/
 

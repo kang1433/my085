@@ -32,7 +32,7 @@
 
 //#define 	old
 //#define 	Power300W
-#define 	DEBUG_MODE		
+//#define 	DEBUG_MODE		
 
 #ifdef DEBUG_MODE
 #define	my_WDG_Config()	

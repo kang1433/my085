@@ -429,7 +429,7 @@ void Capacity_Init(void)
 					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
 				}
 			}
-			else if(RX_BUF[SOCbuf] <= SOC_90) 
+			else if(RX_BUF[SOCbuf] <= SOC_99) 
 			{
 				K_memset(5, SOC_Counter,sizeof(SOC_Counter));
 				if(SOC_Counter[5] > SOC_BaseTimes)
@@ -594,9 +594,16 @@ void Check_DYQ_Sta(void)
 {
 	if(State.DYQ_S)
 	{
-		if(AD_Data[AD_V_Bat] > 10000)
-			P_I_DYQ_Vau = P_I_DYQ - 0.27*(AD_Data[AD_V_Bat] - 10000);
-		else
+		P_I_DYQ_Vau = P_I_DYQ;
+		if(AD_Data[AD_V_Bat] > 9900)
+			P_I_DYQ_Vau -= 0.39*(AD_Data[AD_V_Bat] - 9900);
+		if(AD_Data[AD_V_Bat] > 11400)
+			P_I_DYQ_Vau += 0.66*(AD_Data[AD_V_Bat] - 11400);
+		if(AD_Data[AD_V_Bat] > 11900)
+			P_I_DYQ_Vau += 2.25*(AD_Data[AD_V_Bat] - 11900);
+//		if(AD_Data[AD_V_Bat] > 10000)
+//			P_I_DYQ_Vau = P_I_DYQ - 0.27*(AD_Data[AD_V_Bat] - 10000);
+//		else
 			P_I_DYQ_Vau = P_I_DYQ;
 		if((AD_Data[AD_V_Bat] > (Voltage_100+100)) || ((AD_Data[AD_V_DYQ] > DYQ_utmost) && (Uptime[DYQ_Time] > 1000)))
 		{

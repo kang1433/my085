@@ -147,11 +147,13 @@ void SysTick_Handler(void)	//µÎ´ð¶¨Ê±Æ÷1MS
 		else
 			Open_Time = 30000;
 	}
-	if((DisplayBit.Data_LowP.Byte_LowP & 0x0f) && (LowP_Time < LOWPCLOSETIME))
-		LowP_Time++;
-	else 
-		LowP_Time = 0;
-	
+	if(LowP_Time < LOWPCLOSETIME)
+	{
+		if(DisplayBit.Data_LowP.Byte_LowP & 0x0f)
+			LowP_Time++;
+		else 
+			LowP_Time = 0;
+	}	
 	if((State.CH_LDuty_S) && (CH_LowDuty_Time < CHLDUTYTIME))
 		CH_LowDuty_Time++;
 	if((State.SUN_LDuty_S) && (SUN_LowDuty_Time < SUNLDUTYTIME))
