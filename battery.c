@@ -1149,6 +1149,11 @@ void Check_Input_Sta(void)
 				else
 					POW_CH_Op(0);
 			}
+			if((Capacity == Capacity_0) && (!DisplayBit.Data_LowP.BitLowP.BAT_LowP))
+			{
+				BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 1;
+				DisplayBit.Data_LowP.BitLowP.BAT_LowP = 1;
+			}
 		}
 	}
 }
