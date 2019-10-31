@@ -595,16 +595,23 @@ void Check_DYQ_Sta(void)
 	if(State.DYQ_S)
 	{
 		P_I_DYQ_Vau = P_I_DYQ;
-		if(AD_Data[AD_V_Bat] > 9900)
-			P_I_DYQ_Vau -= 0.39*(AD_Data[AD_V_Bat] - 9900);
-		if(AD_Data[AD_V_Bat] > 11400)
-			P_I_DYQ_Vau += 0.66*(AD_Data[AD_V_Bat] - 11400);
-		if(AD_Data[AD_V_Bat] > 11900)
-			P_I_DYQ_Vau += 2.25*(AD_Data[AD_V_Bat] - 11900);
-//		if(AD_Data[AD_V_Bat] > 10000)
-//			P_I_DYQ_Vau = P_I_DYQ - 0.27*(AD_Data[AD_V_Bat] - 10000);
-//		else
+		if(AD_Data[AD_V_Bat] <= 9900)
 			P_I_DYQ_Vau = P_I_DYQ;
+		else if((AD_Data[AD_V_Bat] > 9900) && (AD_Data[AD_V_Bat] <= 11400))
+			P_I_DYQ_Vau -= 0.39*(AD_Data[AD_V_Bat] - 9900);
+		else if((AD_Data[AD_V_Bat] > 11400) && (AD_Data[AD_V_Bat] <= 11900))
+		{
+			P_I_DYQ_Vau -=585;
+			P_I_DYQ_Vau += 0.66*(AD_Data[AD_V_Bat] - 11400);
+		}
+		else if((AD_Data[AD_V_Bat] > 11900) && (AD_Data[AD_V_Bat] <= 12200))
+		{
+			P_I_DYQ_Vau -=255;
+			P_I_DYQ_Vau += 2.25*(AD_Data[AD_V_Bat] - 11900);
+		}
+		else
+			P_I_DYQ_Vau += 420;
+		
 		if((AD_Data[AD_V_Bat] > (Voltage_100+100)) || ((AD_Data[AD_V_DYQ] > DYQ_utmost) && (Uptime[DYQ_Time] > 1000)))
 		{
 			K_memset(4, DYQ_Counter,sizeof(DYQ_Counter));
@@ -1101,8 +1108,8 @@ void Check_Input_Sta(void)
 			State.DCH_P_S = 0;
 			State.AC_P_S = 0;
 			LowP_Time = 0;
-			if(!BuzzerBit.Data_LowP.Byte_LowP)
-				DisplayBit.Data_LowP.Byte_LowP = 0;
+			BuzzerBit.Data_LowP.Byte_LowP = 0;
+			DisplayBit.Data_LowP.Byte_LowP = 0;
 			if(!State.SW_DET_CH_S)
 			{
 //				if(State.SW_DET_S)
@@ -1172,7 +1179,7 @@ void Operate_DYQ(void)
 				DisplayBit.Data_LowP.BitLowP.DYQ_LowP = 1;
 			}
 		}
-		else if(Capacity >= Capacity_20)
+		else if(Capacity >= Capacity_5)
 		{
 			if(Restart_Num[Num_DYQ] == 0) 
 			{
@@ -1211,7 +1218,7 @@ void Operate_12V(void)
 			DisplayBit.Data_LowP.BitLowP.V12_LowP = 1;
 		}
 	}
-	else if(Capacity >= Capacity_20)
+	else if(Capacity >= Capacity_5)
 	{
 		if(Restart_Num[Num_V12] == 0)
 		{
@@ -1254,7 +1261,7 @@ void Operate_USB(void)
 			DisplayBit.Data_LowP.BitLowP.USB_LowP = 1;
 		}
 	}
-	else if(Capacity >= Capacity_20)
+	else if(Capacity >= Capacity_5)
 	{
 		if(Restart_Num[Num_USB] == 0) 
 		{
