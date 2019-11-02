@@ -89,6 +89,10 @@ void PORTInit(void)
 	GPIO_InitStructure.GPIO_Pin = PIN_USB_ERROR; 	
 	GPIO_Init(PORT_USB_ERROR,&GPIO_InitStructure); 	
 
+	/*USB_ERROR2*/
+	GPIO_InitStructure.GPIO_Pin = PIN_USB_ERROR2; 	
+	GPIO_Init(PORT_USB_ERROR2,&GPIO_InitStructure); 	
+
 	/*12V1_INPUT*/
 	GPIO_InitStructure.GPIO_Pin = PIN_12V1_INPUT; 	
 	GPIO_Init(PORT_12V1_INPUT,&GPIO_InitStructure); 	
@@ -200,6 +204,7 @@ void DYQ_Op(u8 sta )
 	{
 		mPrintf("DYQ_L\r\n");
 		DYQ_DISABLE;
+		FAN_DISABLE;
 		DYQ_OUT_State = Out_None;
 		Uptime[DYQ_Time] = 0;
 	}

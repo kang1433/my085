@@ -27,8 +27,8 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 
 
 /*********温度定义**********/
-#define AC_P_TEMP			80
-#define AC_PRe_TEMP 		60
+#define AC_P_TEMP			95
+#define AC_PRe_TEMP 		85
 #define FAN_ON_TEMP		45
 #define FAN_OFF_TEMP		40
 
@@ -49,7 +49,7 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define   Voltage_80		  	11800 
 #define   Voltage_90		 	12300
 #define   Voltage_100		 	12600
-#define   DYQ_utmost	 		12250  
+#define   DYQ_utmost	 		12200  
 
 #define SOC_Rang	10
 #define SOC_0		50
@@ -58,7 +58,8 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define SOC_40		400
 #define SOC_60		600
 #define SOC_80		800
-#define SOC_99		990
+#define SOC_90		900
+#define SOC_95		950
 #define SOC_100		999
 /******电量电压定义******/
 
@@ -168,7 +169,7 @@ typedef struct _BBit
 			u8  	V12_Err				:1;		//输出故障，可检测拔出自动复位
 			u8  	USB_Err				:1;		//输出故障
 			u8  	ACO_Err				:1;		//输出故障
-			u8  	RSVD4				:1;		
+			u8  	USB_Err2			:1;		
 			u8 	RSVD5				:1;
 			u8 	RSVD6				:1;
 			u8 	RSVD7				:1;
@@ -181,11 +182,11 @@ typedef struct _BBit
 			u8  	CH_Err				:1;		//故障消失可自动复位
 			u8  	CH_Verr				:1;		//充电电压不对//故障消失可自动复位
 			u8  	CH_OIErr			:1;		//充电过流MOS  保护
-			u8 	RSVD3				:1;
+			u8 	CH_TErr				:1;
 			u8  	SUN_Err				:1;		//故障消失可自动复位
 			u8  	SUN_VErr			:1;		//充电电压不对//故障消失可自动复位
 			u8 	SUN_OIErr			:1;		//充电过流MOS  保护
-			u8 	RSVD7				:1;
+			u8 	SUN_TErr			:1;		//充电口过温
 		}BitIErr;
 		u8 Byte_IErr;
 	}Data_IErr;

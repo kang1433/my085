@@ -41,12 +41,12 @@ extern int32 AD_Data[AD_ChNUM];
 
 /*********充电电压阀值定义*********/
 #define   N_V_Charger		5000		//单位mV
-#define   C_V_Charger		(12400-450)
-#define   P_V_Charger		(13100-450)	
+#define   C_V_Charger		(12400-400)
+#define   P_V_Charger		(13100-400)	
 
 #define   N_V_SUN			5000		//单位mV
-#define   C_V_SUN			(12500-450)
-#define   P_V_SUN			(25000-450)	
+#define   C_V_SUN			(12500-400)
+#define   P_V_SUN			(25000-400)	
 /*********充电电流阀值定义*********/
 #define   Zero_I				200		//ma
 #define   SUN_I_Least			800		//ma

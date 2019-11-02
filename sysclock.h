@@ -8,7 +8,7 @@
 #define		UTMOSTTIME		65500
 #define		OpDuration			3000
 #define		CHLDUTYTIME		3000
-#define		SUNLDUTYTIME		10000
+#define		SUNLDUTYTIME		3000
 #define		OneHour				3600000
 #define		Onemin				58000
 #define		CLOSETIME			(1*3600000)			//放置关机时间小时

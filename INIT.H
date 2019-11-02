@@ -35,32 +35,28 @@ extern u16 Charge_Dutycycle;
 #define I_V12_H					GPIO_SetBits(PORT_I_12V,PIN_I_12V)			
 
 #ifdef  old
-#define PORT_FAN 				GPIOB
+#define PORT_FAN 				GPIOB		//æ…∞ÂΩ≈Œª
 #define PORT_BT_STA			GPIOA		
 #define PIN_FAN					GPIO_Pin_4	
 #define PIN_BT_STA				GPIO_Pin_12		
 #else
-#define PORT_FAN 				GPIOA		//GPIOBæ…∞ÂΩ≈Œª
-#define PORT_BT_STA			GPIOB		//GPIOAæ…∞ÂΩ≈Œª
-#define PIN_FAN					GPIO_Pin_12		//GPIO_Pin_4æ…∞ÂΩ≈Œª
-#define PIN_BT_STA				GPIO_Pin_4		//GPIO_Pin_12æ…∞ÂΩ≈Œª
+#define PORT_FAN 				GPIOA		
+#define PORT_BT_STA			GPIOB		
+#define PIN_FAN					GPIO_Pin_12		
+#define PIN_BT_STA				GPIO_Pin_4		
 #endif
 
 
 /*…Ë±∏øÿ÷∆Ω≈*/
-//#define PORT_FAN 				GPIOA		//GPIOBæ…∞ÂΩ≈Œª
 #define PORT_BZ					GPIOA
 #define PORT_LIGHT 				GPIOC
 #define PORT_EN_POW			GPIOB
 #define PORT_LCD_LIGHT			GPIOC
-//#define PORT_BT_STA			GPIOB		//GPIOAæ…∞ÂΩ≈Œª
 
-//#define PIN_FAN					GPIO_Pin_12		//GPIO_Pin_4æ…∞ÂΩ≈Œª
 #define PIN_BZ					GPIO_Pin_10
 #define PIN_LIGHT				GPIO_Pin_14
 #define PIN_EN_POW				GPIO_Pin_13
 #define PIN_LCD_LIGHT			GPIO_Pin_15
-//#define PIN_BT_STA				GPIO_Pin_4		//GPIO_Pin_12æ…∞ÂΩ≈Œª
 
 #define FAN_ENABLE				GPIO_SetBits(PORT_FAN,PIN_FAN)			//∑Á…» ‰≥ˆ πƒ‹
 #define FAN_DISABLE	 			GPIO_ResetBits(PORT_FAN,PIN_FAN)			
@@ -78,6 +74,7 @@ extern u16 Charge_Dutycycle;
 /*ºÏ≤‚Ω≈*/
 #define PORT_CH_SHORT 			GPIOA
 #define PORT_USB_ERROR      		GPIOB
+#define PORT_USB_ERROR2    		GPIOA
 #define PORT_USB_INPUT			GPIOB
 #define PORT_12V1_INPUT		GPIOB
 #define PORT_12V2_INPUT		GPIOB
@@ -85,6 +82,7 @@ extern u16 Charge_Dutycycle;
 
 #define PIN_CH_SHORT			GPIO_Pin_7
 #define PIN_USB_ERROR			GPIO_Pin_15
+#define PIN_USB_ERROR2			GPIO_Pin_1
 #define PIN_USB_INPUT			GPIO_Pin_3
 #define PIN_12V1_INPUT			GPIO_Pin_9
 #define PIN_12V2_INPUT			GPIO_Pin_8
@@ -93,6 +91,7 @@ extern u16 Charge_Dutycycle;
 #define CH_SHORT_L				GPIO_ResetBits(PORT_CH_SHORT,PIN_CH_SHORT)			
 #define GET_CH_SHORT  			GPIO_ReadInputDataBit(PORT_CH_SHORT,PIN_CH_SHORT)	//≥‰µÁ∂Ã¬∑ºÏ≤‚
 #define GET_USB_ERROR			GPIO_ReadInputDataBit(PORT_USB_ERROR,PIN_USB_ERROR)
+#define GET_USB_ERROR2			GPIO_ReadInputDataBit(PORT_USB_ERROR2,PIN_USB_ERROR2)
 #define GET_USB_INPUT			GPIO_ReadInputDataBit(PORT_USB_INPUT,PIN_USB_INPUT)	
 #define GET_12V1_INPUT			GPIO_ReadInputDataBit(PORT_12V1_INPUT,PIN_12V1_INPUT)	
 #define GET_12V2_INPUT			GPIO_ReadInputDataBit(PORT_12V2_INPUT,PIN_12V2_INPUT)	

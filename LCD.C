@@ -79,7 +79,8 @@ void Display_12V(void)
 void Display_USB(void)
 {
 	if((DisplayBit.Data_LowP.BitLowP.USB_LowP)	//	闪烁	
-	||(DisplayBit.Data_OErr.BitOErr.USB_Err))
+	||(DisplayBit.Data_OErr.BitOErr.USB_Err)
+	||(DisplayBit.Data_OErr.BitOErr.USB_Err2))
 	{
 		if(Flicker_state)	
 			Vk1024B_DisSegOn(LCD_USB); 
@@ -117,9 +118,7 @@ void Display_AC_Out(void)
 /*太阳能充电图标显示*/
 void Display_SUN(void)
 {
-	if((DisplayBit.Data_IErr.BitIErr.SUN_Err)	
-	||(DisplayBit.Data_IErr.BitIErr.SUN_VErr)
-	||(DisplayBit.Data_IErr.BitIErr.SUN_OIErr)) 
+	if(DisplayBit.Data_IErr.Byte_IErr & 0xf0)	
 	{
 		if(Flicker_state)	
 			Vk1024B_DisSegOn(LCD_SUN_CH); 
@@ -138,9 +137,7 @@ void Display_SUN(void)
 /*市电充电图标显示*/
 void Display_CH(void)
 {
-	if((DisplayBit.Data_IErr.BitIErr.CH_Err)	
-	||(DisplayBit.Data_IErr.BitIErr.CH_Verr)
-	||(DisplayBit.Data_IErr.BitIErr.CH_OIErr)) 
+	if(DisplayBit.Data_IErr.Byte_IErr & 0x0f)	
 	{
 		if(Flicker_state)	
 			Vk1024B_DisSegOn(LCD_AC_CH); 
