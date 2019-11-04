@@ -1173,6 +1173,8 @@ void Check_Input_Sta(void)
 			LowP_Time = 0;
 			BuzzerBit.Data_LowP.Byte_LowP = 0;
 			DisplayBit.Data_LowP.Byte_LowP = 0;
+			if(Charge_State == CH_Ch)
+				State.Key_S = 0;
 			if(!State.SW_DET_CH_S)
 			{
 //				if(State.SW_DET_S)
@@ -1189,6 +1191,8 @@ void Check_Input_Sta(void)
 		{
 			CheckInputCont[1] = 0;
 			State.CH_S = 0;
+			if(Access_CH)
+				State.Key_S = 0;
 			if(!State.SW_DET_CH_S)
 			{
 //				if(State.SW_DET_S)
@@ -1399,6 +1403,7 @@ void Operate_AC_OUT(void)
 
 void Operate_SUN_Ch(void)
 {
+	u8 SUN_ErrTimes;
 	if(!State.SUN_Ch_S)	
 	{
 		/*太阳能接入电压正常*/
@@ -1409,6 +1414,7 @@ void Operate_SUN_Ch(void)
 			if(SUN_Counter[1] > (CH_NorTimes))
 			{
 				SUN_Counter[1] =0 ;
+				State.SUN_NV_S = 1;
 				Access_SUN = SUN_Ch;
 				BuzzerBit.Data_IErr.BitIErr.SUN_VErr = 0;
 				DisplayBit.Data_IErr.BitIErr.SUN_VErr = 0;
@@ -1452,6 +1458,7 @@ void Operate_SUN_Ch(void)
 			if(SUN_Counter[0] > (CH_NorTimes))
 			{
 				SUN_Counter[0] =0 ;
+				State.SUN_NV_S = 1;
 				Access_SUN = SUN_Ch;
 				BuzzerBit.Data_IErr.BitIErr.SUN_VErr = 1;
 				DisplayBit.Data_IErr.BitIErr.SUN_VErr = 1;
@@ -1463,9 +1470,14 @@ void Operate_SUN_Ch(void)
 			K_memset(2, SUN_Counter,sizeof(SUN_Counter));
 			if(SUN_Counter[2] > (CH_NorTimes))
 				Access_SUN = SUN_Ch;
-			if(SUN_Counter[2] > (CH_ErrTimes))
+			if(State.SUN_NV_S)
+				SUN_ErrTimes = 180;
+			else 
+				SUN_ErrTimes = CH_NorTimes;
+			if(SUN_Counter[2] > (SUN_ErrTimes))
 			{
-				SUN_Counter[2] =0 ;
+				SUN_Counter[2] = 0;
+				State.SUN_NV_S = 0;
 				BuzzerBit.Data_IErr.BitIErr.SUN_VErr = 1;
 				DisplayBit.Data_IErr.BitIErr.SUN_VErr = 1;
 			}
@@ -1480,6 +1492,7 @@ void Operate_SUN_Ch(void)
 				BuzzerBit.Data_IErr.Byte_IErr &= 0x8f;//清零4,5,6位
 				DisplayBit.Data_IErr.Byte_IErr &= 0x8f;
 				State.SUN_LDuty_S = 0;
+				State.SUN_NV_S = 0;
 				SUN_LowDuty_Time = 0;
 				Restart_Num[Num_SUN_Ch] = 0;
 				Access_SUN = CH_None;
@@ -1491,6 +1504,7 @@ void Operate_SUN_Ch(void)
 
 void Operate_CH_Ch(void)
 {
+	u8 CH_ErrTimes;
 	if(!State.CH_Ch_S)	
 	{
 		/*充电器接入电压正常*/
@@ -1502,6 +1516,7 @@ void Operate_CH_Ch(void)
 			{
 				Charger_Counter[1] =0 ;
 				Access_CH = CH_Ch;
+				State.CH_NV_S = 1;
 				BuzzerBit.Data_IErr.BitIErr.CH_Verr = 0;
 				DisplayBit.Data_IErr.BitIErr.CH_Verr = 0;
 				if(State.SUN_Ch_S)	//切换到充电器充电，关太阳能
@@ -1547,6 +1562,7 @@ void Operate_CH_Ch(void)
 			{
 				Charger_Counter[0] =0 ;
 				Access_CH = CH_Ch;
+				State.CH_NV_S = 1;
 				BuzzerBit.Data_IErr.BitIErr.CH_Verr = 1;
 				DisplayBit.Data_IErr.BitIErr.CH_Verr = 1;
 				Operate_SUN_Ch();
@@ -1558,9 +1574,14 @@ void Operate_CH_Ch(void)
 			K_memset(2, Charger_Counter,sizeof(Charger_Counter));
 			if(Charger_Counter[2] > CH_NorTimes)
 				Access_CH = CH_Ch;
+			if(State.CH_NV_S)
+				CH_ErrTimes = 180;
+			else 
+				CH_ErrTimes = CH_NorTimes;
 			if(Charger_Counter[2] > CH_ErrTimes)
 			{
 				Charger_Counter[2] =0 ;
+				State.CH_NV_S = 0;
 				BuzzerBit.Data_IErr.BitIErr.CH_Verr = 1;
 				DisplayBit.Data_IErr.BitIErr.CH_Verr = 1;
 				Operate_SUN_Ch();
@@ -1576,6 +1597,7 @@ void Operate_CH_Ch(void)
 				BuzzerBit.Data_IErr.Byte_IErr &= 0xf8;	//清零低3位
 				DisplayBit.Data_IErr.Byte_IErr &= 0xf8;
 				State.CH_LDuty_S = 0;
+				State.CH_NV_S = 0;
 				CH_LowDuty_Time = 0;
 				Restart_Num[Num_CH_Ch] = 0;
 				Access_CH = CH_None;

@@ -15,7 +15,7 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define In_BaseTimes			0
 #define AC_OUT_BaseTimes	1
 #define CH_NorTimes			2
-#define CH_ErrTimes			90
+//#define CH_ErrTimes			90
 #define USB_BaseTimes		3
 #define Num_BZ				10
 #define NumOfRestarts		4		//重启次数
@@ -60,7 +60,7 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define SOC_80		800
 #define SOC_90		900
 #define SOC_95		950
-#define SOC_100		999
+#define SOC_100		1000
 /******电量电压定义******/
 
 enum _Capacity	//电量
@@ -130,6 +130,8 @@ typedef struct _state
 
 	u8	CH_LDuty_S			:1;			
 	u8	SUN_LDuty_S		:1;			
+	u8	CH_NV_S			:1;			
+	u8	SUN_NV_S			:1;			
 
 	u8	AC_OV3min_S		:1;			
 	u8	AC_OV15min_S		:1;	
