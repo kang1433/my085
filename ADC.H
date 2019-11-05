@@ -40,13 +40,14 @@ extern int32 AD_Data[AD_ChNUM];
 
 
 /*********充电电压阀值定义*********/
-#define   N_V_Charger		5000		//单位mV
-#define   C_V_Charger		(12400-400)
-#define   P_V_Charger		(13100-400)	
+#define   Diode_V				400					//单位mV
+#define   N_V_Charger		(9000- Diode_V)		//单位mV
+#define   C_V_Charger		(12400-Diode_V)
+#define   P_V_Charger		(13100-Diode_V)	
 
-#define   N_V_SUN			5000		//单位mV
-#define   C_V_SUN			(12500-400)
-#define   P_V_SUN			(25000-400)	
+#define   N_V_SUN			(9000- Diode_V)		//单位mV
+#define   C_V_SUN			(12400-Diode_V)
+#define   P_V_SUN			(25000-Diode_V)	
 /*********充电电流阀值定义*********/
 #define   Zero_I				200		//ma
 #define   SUN_I_Least			800		//ma
@@ -67,7 +68,7 @@ extern int32 AD_Data[AD_ChNUM];
 #define   P_I_12V		 		3000		
 
 #define   B_I_DYQ		 	50		//ma
-#define   C_I_DYQ		 	150		
+#define   C_I_DYQ		 	200		
 #define   P_I_DYQ		 	8500
 
 #ifdef  old

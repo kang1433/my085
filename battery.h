@@ -15,7 +15,7 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define In_BaseTimes			0
 #define AC_OUT_BaseTimes	1
 #define CH_NorTimes			2
-//#define CH_ErrTimes			90
+#define ErrTimes				100
 #define USB_BaseTimes		3
 #define Num_BZ				10
 #define NumOfRestarts		4		//重启次数

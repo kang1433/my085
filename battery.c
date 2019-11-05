@@ -78,9 +78,11 @@ void Printfstatus(void)
 	IFPrintf(BuzzerBit.Data_IErr.BitIErr.CH_Err);
 	IFPrintf(BuzzerBit.Data_IErr.BitIErr.CH_Verr);
 	IFPrintf(BuzzerBit.Data_IErr.BitIErr.CH_OIErr);
+	IFPrintf(BuzzerBit.Data_IErr.BitIErr.CH_TErr);
 	IFPrintf(BuzzerBit.Data_IErr.BitIErr.SUN_Err);
 	IFPrintf(BuzzerBit.Data_IErr.BitIErr.SUN_VErr);
 	IFPrintf(BuzzerBit.Data_IErr.BitIErr.SUN_OIErr);
+	IFPrintf(BuzzerBit.Data_IErr.BitIErr.SUN_TErr);
 
 	IFPrintf(DisplayBit.Data_OErr.BitOErr.DYQ_Err);
 	IFPrintf(DisplayBit.Data_OErr.BitOErr.V12_Err);
@@ -94,18 +96,19 @@ void Printfstatus(void)
 	IFPrintf(DisplayBit.Data_IErr.BitIErr.CH_Err);
 	IFPrintf(DisplayBit.Data_IErr.BitIErr.CH_Verr);
 	IFPrintf(DisplayBit.Data_IErr.BitIErr.CH_OIErr);
+	IFPrintf(DisplayBit.Data_IErr.BitIErr.CH_TErr);
 	IFPrintf(DisplayBit.Data_IErr.BitIErr.SUN_Err);
 	IFPrintf(DisplayBit.Data_IErr.BitIErr.SUN_VErr);
 	IFPrintf(DisplayBit.Data_IErr.BitIErr.SUN_OIErr);
+	IFPrintf(DisplayBit.Data_IErr.BitIErr.SUN_TErr);
 	printf("\r\n");
 	for(u8 i=0;i<AD_ChNUM;i++)
-		printf(" A%d=%d ",i,AD_Data[i]);
+		printf(" AD%d=%d ",i,AD_Data[i]);
 	printf("\r\n");
 	for(u8 j=0;j<10;j++)
-		printf(" R%d=%d ",j,RX_BUF[j]);
+		printf(" RX%d=%d ",j,RX_BUF[j]);
 	printf("\r\n *T3=%d",ACOVTime[0]);
 	printf(" *T15=%d",ACOVTime[1]);
-	printf(" *pow=%d",RX_BUF[Powbuf]);
 	printf(" *OT=%d",Open_Time);
 	printf(" *LT=%d",LowP_Time);
 	printf(" *DC=%d",Charge_Dutycycle);
@@ -742,6 +745,10 @@ void Check_USB_Sta(void)
 			if(USB_Counter[1] > (USB_BaseTimes))
 			{
 				USB_Counter[1] = 0;
+				if(GET_USB_INPUT == 1)		// USB有输出
+					USB_OUT_State = Out_Normal;
+				else
+					USB_OUT_State = Out_None;
 				if(!DisplayBit.Data_OErr.BitOErr.USB_Err2)
 				{
 					BuzzerBit.Data_OErr.BitOErr.USB_Err2 = 1;
@@ -1471,7 +1478,7 @@ void Operate_SUN_Ch(void)
 			if(SUN_Counter[2] > (CH_NorTimes))
 				Access_SUN = SUN_Ch;
 			if(State.SUN_NV_S)
-				SUN_ErrTimes = 180;
+				SUN_ErrTimes = ErrTimes;
 			else 
 				SUN_ErrTimes = CH_NorTimes;
 			if(SUN_Counter[2] > (SUN_ErrTimes))
@@ -1575,10 +1582,10 @@ void Operate_CH_Ch(void)
 			if(Charger_Counter[2] > CH_NorTimes)
 				Access_CH = CH_Ch;
 			if(State.CH_NV_S)
-				CH_ErrTimes = 180;
+				CH_ErrTimes = 2*ErrTimes;
 			else 
 				CH_ErrTimes = CH_NorTimes;
-			if(Charger_Counter[2] > CH_ErrTimes)
+			if(Charger_Counter[2] > CH_ErrTimes)	//电压从正常下降下来时低电压告警延时30s
 			{
 				Charger_Counter[2] =0 ;
 				State.CH_NV_S = 0;
@@ -1587,7 +1594,7 @@ void Operate_CH_Ch(void)
 				Operate_SUN_Ch();
 			}
 		}
-		/*小于5v，认为无充电器接入*/
+		/*小于9v，认为无充电器接入*/
 		else
 		{
 			K_memset(3, Charger_Counter,sizeof(Charger_Counter));

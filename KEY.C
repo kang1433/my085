@@ -69,10 +69,10 @@ void CheckSWDET(void)
 		State.SW_DET_Press_S=0;
 		SW_DET_PressTime=0;
 	}
-	if((Open_Time >= CLOSETIME) || (LowP_Time>= LOWPCLOSETIME))
+	if(LowP_Time>= LOWPCLOSETIME)	// || (Open_Time >= CLOSETIME))
 	{
 		LowP_Time = 0;
-		Open_Time = 30000;
+//		Open_Time = 30000;
 		POW_Op(0);
 	}
 }
