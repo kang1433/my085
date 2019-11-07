@@ -29,8 +29,8 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 /*********温度定义**********/
 #define AC_P_TEMP			95
 #define AC_PRe_TEMP 		85
-#define FAN_ON_TEMP		45
-#define FAN_OFF_TEMP		40
+#define FAN_ON_TEMP		80
+#define FAN_OFF_TEMP		70
 
 /*********数组位置**********/
 #define   Num_DYQ			0x00	
@@ -143,6 +143,8 @@ typedef struct _state
 	u8	DCH_P_S			:1;			
 	u8	AC_P_S				:1;			
 	u8	H_Temp_S			:1;			
+	u8	H_TempFAN_S		:1;			
+	u8	H_DYQIFAN_S		:1;			
 	u8	ADC_Finish_S 		:1;			//ADC转换完成
 }pstate;
 extern pstate State;
@@ -215,7 +217,7 @@ void Capacity_Init(void);
 void Check_Capacity_Sta(void);
 void Check_Charge_Sta(void);
 void Operate_CH_Ch(void);
-void Check_Temp(void);
+void Check_TempFAN(void);
 void Check_Sta(void);
 void Operate_De(void);
 

@@ -659,7 +659,7 @@ void Check_DYQ_Sta(void)
 			{
 				DYQ_Counter[3] = 0;
 				DYQ_OUT_State = Out_Normal;
-				FAN_ENABLE;
+				State.H_DYQIFAN_S = 1;
 				Clear_DYQ_ERR();
 			}
 		}
@@ -670,7 +670,7 @@ void Check_DYQ_Sta(void)
 			{
 				DYQ_Counter[4] = 0;
 				DYQ_OUT_State = Out_Normal;
-				FAN_DISABLE;
+				State.H_DYQIFAN_S = 0;
 				Clear_DYQ_ERR();
 			}
 		}
@@ -680,7 +680,7 @@ void Check_DYQ_Sta(void)
 			if(DYQ_Counter[5] > (DYQ_BaseTimes))
 			{
 				DYQ_Counter[5] = 0;
-				FAN_DISABLE;
+				State.H_DYQIFAN_S = 0;
 				Clear_DYQ_ERR();
 			}
 		}
@@ -691,7 +691,7 @@ void Check_DYQ_Sta(void)
 			{
 				DYQ_Counter[6] = 0;
 				DYQ_OUT_State = Out_None;
-				FAN_DISABLE;
+				State.H_DYQIFAN_S = 0;
 				Clear_DYQ_ERR();
 			}
 		}
@@ -1232,7 +1232,7 @@ void Check_Input_Sta(void)
 	}
 }
 
-void Check_Temp(void)
+void Check_TempFAN(void)
 {
 	GetTemperature();
 	if(AD_Data[AD_NTC] >= AC_P_TEMP)
@@ -1243,6 +1243,14 @@ void Check_Temp(void)
 		BuzzerBit.Data_IErr.Byte_IErr &= 0X77;
 		DisplayBit.Data_IErr.Byte_IErr &= 0X77;
 	}
+	if(AD_Data[AD_NTC] >= FAN_ON_TEMP)
+		State.H_TempFAN_S = 1;
+	else if(AD_Data[AD_NTC] < FAN_OFF_TEMP)
+		State.H_TempFAN_S = 0;
+	if((State.H_TempFAN_S) || (State.H_DYQIFAN_S))
+		FAN_ENABLE;
+	else
+		FAN_DISABLE;
 }
 
 void Operate_DYQ(void)

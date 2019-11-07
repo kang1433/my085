@@ -11,7 +11,7 @@ u16 AD_Value[AD_ChNUM];      					//AD采集值
 int32 AD_Data[AD_ChNUM];      					//AD计算值
 __IO uint16_t ADC_ConvertedValue[AD_Count][AD_ChNUM];
 
-
+/*TPS1-395F104F-100*/
 const float  Resistance[TempSize]=
 {1746.4135,1641.9976,1544.4906,1453.3933,1368.2451,1288.6215,1214.1307,1144.4111,1079.1283,1017.9737,
 960.6618,906.9284,856.5290,809.2373,764.8435,723.1532,683.9862,647.1753,612.5652,580.0118,//-20~-11
@@ -258,7 +258,7 @@ void ADC_Filter(void)
 			sum =0;
 		}
 		temp[AD_I_12V]=(double)3300000/4096/31.1/5.375;
-		temp[AD_I_Charge]=(double)3300000/4096/31.1/5;// 4.82;
+		temp[AD_I_Charge]=(double)3300000/4096/31.1/2.5;// 4.82;
 		temp[AD_I_DYQ]=(double)3300000/4096/DYQRATIO;
 		temp[AD_V_Charger]=(double)3300*10.78/4096;
 		temp[AD_V_SUN]=(double)3300*10.78/4096;

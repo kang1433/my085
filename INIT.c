@@ -204,7 +204,7 @@ void DYQ_Op(u8 sta )
 	{
 		mPrintf("DYQ_L\r\n");
 		DYQ_DISABLE;
-		FAN_DISABLE;
+		State.H_DYQIFAN_S = 0;
 		DYQ_OUT_State = Out_None;
 		Uptime[DYQ_Time] = 0;
 	}

@@ -6,7 +6,7 @@ void TaskInit(void)
 {
 	while(task_add(5,150,CheckSWDET,1));
 	while(task_add(6,150,ADC_Filter,1));
-	while(task_add(7,2000,Check_Temp,1));
+	while(task_add(7,2000,Check_TempFAN,1));
 	while(task_add(1,150,Operate_De,1));
 	while(task_add(2,150,Check_Sta,1));
 	while(task_add(3,400,DisplayTask,1));
