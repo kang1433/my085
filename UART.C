@@ -142,24 +142,24 @@ int32_t str_int_n( const char *str, uint8_t n )
 	 const char *ptr;//ptr保存str字符串开头
 	 while(*str != 0)
 	 {
-		  if (*str =='_' && n ) //  第n组_
+		if (*str =='_' && n ) //  第n组_
+		{ 
+			n--; 
+			if( n==0 ) 
+				str++; 
+		}
+		if( n== 0 )
+		{	
+			if(*str == '-' || *str == '+' ) //如果第一个字符是正负号，
 			{ 
-				n--; 
-				if( n==0 ) 
-				{ str++; }
+				ptr = str;
+				str++;  //则移到下一个字符
 			}
-			if( n== 0 )
-			{	
-				if(*str == '-' || *str == '+' ) //如果第一个字符是正负号，
-				{ 
-					ptr = str;
-					str++;  //则移到下一个字符
-				}
-				if ((*str < '0') || (*str > '9')) //如果当前字符不是数字
-				{ break;  }                       //则退出循环
-				temp = temp*10 + (*str - '0');    //如果当前字符是数字则计算数值
-			}
-			str++;      //移到下一个字符
+			if ((*str < '0') || (*str > '9')) //如果当前字符不是数字
+				break;                    //则退出循环
+			temp = temp*10 + (*str - '0');    //如果当前字符是数字则计算数值
+		}
+		str++;      //移到下一个字符
 	 }
 	 if (*ptr == '-')       //如果字符串是以“-”开头，则转换成其相反数
 	 { temp = -temp;  }

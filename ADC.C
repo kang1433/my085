@@ -228,7 +228,7 @@ void GetTemperature(void)
 {
 	float Res;
 //	Res=((((float)AD_Value[AD_NTC]*100))/(4096-((float)AD_Value[AD_NTC])));
-	Res = ((double)330*4096)/(3.3*(double)AD_Value[AD_NTC] + 900) - 100;
+	Res = ((double)330*4096)/(3.3*(double)AD_Value[AD_NTC]) - 100;
 	if (Res > Resistance[0])               
 		AD_Data[AD_NTC]= -999;
 	else if (Res < Resistance[TempTop])       

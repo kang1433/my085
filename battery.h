@@ -27,10 +27,10 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 
 
 /*********温度定义**********/
-#define AC_P_TEMP			95
-#define AC_PRe_TEMP 		85
-#define FAN_ON_TEMP		80
-#define FAN_OFF_TEMP		70
+#define AC_P_TEMP			85
+#define AC_PRe_TEMP 		75
+#define FAN_ON_TEMP		70
+#define FAN_OFF_TEMP		60
 
 /*********数组位置**********/
 #define   Num_DYQ			0x00	
@@ -49,7 +49,7 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define   Voltage_80		  	11800 
 #define   Voltage_90		 	12300
 #define   Voltage_100		 	12600
-#define   DYQ_utmost	 		12200  
+#define   DYQ_utmost	 		12800  
 
 #define SOC_Rang	10
 #define SOC_0		50

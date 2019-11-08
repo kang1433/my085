@@ -69,7 +69,7 @@ extern int32 AD_Data[AD_ChNUM];
 
 #define   B_I_DYQ		 	50		//ma
 #define   C_I_DYQ		 	200		
-#define   P_I_DYQ		 	8500
+#define   P_I_DYQ		 	8300
 
 #ifdef  old
 #define DYQRATIO			140//135
