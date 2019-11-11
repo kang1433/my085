@@ -65,7 +65,7 @@ extern int32 AD_Data[AD_ChNUM];
 /*********DC电流阀值定义*********/
 #define   B_I_12V		 		50		//ma
 #define   C_I_12V		 		200		
-#define   P_I_12V		 		3000		
+#define   P_I_12V		 		2800		
 
 #define   B_I_DYQ		 	50		//ma
 #define   C_I_DYQ		 	200		
