@@ -988,7 +988,7 @@ void Check_Charge_Sta(void)
 			}
 			else if(AD_Data[AD_I_Charge] >= Zero_I)	//充电电流小，迅速增加占空比
 			{
-				if(AD_Data[AD_I_Charge] >= CH_I_Least)
+//				if(AD_Data[AD_I_Charge] >= CH_I_Least)
 					Charge_State = CH_Ch;
 				Clear_CH_ERR();
 				State.CH_LDuty_S = 0;
@@ -1102,7 +1102,7 @@ void Check_Charge_Sta(void)
 			}
 			else if(AD_Data[AD_I_Charge] >= Zero_I)		//充电电流小，迅速增加占空比
 			{
-				if(AD_Data[AD_I_Charge] >= SUN_I_Least)
+//				if(AD_Data[AD_I_Charge] >= SUN_I_Least)
 					Charge_State = SUN_Ch;
 				Clear_SUN_ERR();
 				State.SUN_LDuty_S = 0;

@@ -59,7 +59,7 @@ extern int32 AD_Data[AD_ChNUM];
 #define   CH_I_Least			800		//ma
 #define   CH_I_Less			4000	
 #define   CH_I_Little			9000	
-#define   CH_I_Nor 			10000	
+#define   CH_I_Nor 			10100	
 #define   CH_I_Pro			10500
 
 /*********DC电流阀值定义*********/
