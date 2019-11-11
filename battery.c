@@ -630,7 +630,7 @@ void Check_DYQ_Sta(void)
 				SET_DYQ_ERR();
 			}
 		}
-		else if((GET_DYQ_PG == 0)&&(Uptime[DYQ_Time] >= OpDuration))//点烟器过流或者故障
+		else if(GET_DYQ_PG == 0)//&&(Uptime[DYQ_Time] >= OpDuration))//点烟器过流或者故障
 		{
 			K_memset(1, DYQ_Counter,sizeof(DYQ_Counter));
 			if(DYQ_Counter[1] > DYQ_BaseTimes)
