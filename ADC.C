@@ -258,7 +258,7 @@ void ADC_Filter(void)
 			sum =0;
 		}
 		temp[AD_I_12V]=(double)3300000/4096/31.1/5.375;
-		temp[AD_I_Charge]=(double)3300000/4096/31.1/4.83;
+		temp[AD_I_Charge]=(double)3300000/4096/31.1/2.41;// 4.83;
 		temp[AD_I_DYQ]=(double)3300000/4096/DYQRATIO;
 		temp[AD_V_Charger]=(double)3300*10.78/4096;
 		temp[AD_V_SUN]=(double)3300*10.78/4096;

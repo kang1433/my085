@@ -12,7 +12,7 @@
 #define		OneHour				3600000
 #define		Onemin				58000
 #define		CLOSETIME			(1*3600000)			//放置关机时间小时
-#define		LOWPCLOSETIME		((1*60000)+40000)	//低电量关机时间分钟
+#define		LOWPCLOSETIME		((1*60000)+29000)	//低电量关机时间分钟
 
 #define		USB_Time		0
 #define		DYQ_Time		1

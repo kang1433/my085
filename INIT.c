@@ -94,7 +94,10 @@ void PORTInit(void)
 	GPIO_Init(PORT_USB_ERROR2,&GPIO_InitStructure); 	
 
 	/*12V1_INPUT*/
-	GPIO_InitStructure.GPIO_Pin = PIN_12V1_INPUT; 	
+ 	GPIO_InitStructure.GPIO_Pin = PIN_12V1_INPUT; 	
+ 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;   		
+ 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;  		
+ 	GPIO_InitStructure.GPIO_Speed = GPIO_SPEED;	
 	GPIO_Init(PORT_12V1_INPUT,&GPIO_InitStructure); 	
 
 	/*12V2_INPUT*/
