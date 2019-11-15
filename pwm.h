@@ -6,7 +6,7 @@
 //#define ARR 			125
 #define FULL_Dutycycle 	100
 #define START_Dutycycle	5
-#define Middle_Dutycycle	90
+#define Middle_Dutycycle	80
 #define DOWN_Dutycycle 	0
 #define PR_Dutycycle 		30
 

@@ -67,8 +67,15 @@ void StartInitialization(void)
 	}
 	if(State.SW_DET_S)
 	{
+		FLASH_ReadNWord(&flag_data, FLASH_ADDR_FLAG, 1); //读出标志位, 看是否已经写入数据	
+		if(0xAA55 != flag_data)
+		{
+			while(Init_DYQ_OpV());//等点烟器开启
+		}
+		
 		while(Open_Time < 4000)
 		{
+			Init_DYQ();
 			ADC_Filter();
 			Vk1024B_DisAll(1);
 			Capacity_Init();
@@ -100,6 +107,7 @@ void StartInitialization(void)
 	}
 	memset(SOC_Counter,0,sizeof(SOC_Counter));
 	memset(Vol_Counter,0,sizeof(Vol_Counter));
+	FLASH_ReadNWord(ReadBuf, FLASH_ADDR_DATA, LENGTH_DATA);
 }
 
 main()

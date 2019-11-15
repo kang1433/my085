@@ -57,10 +57,7 @@ extern int32 AD_Data[AD_ChNUM];
 #define   SUN_I_Nor 			5100	
 #define   SUN_I_Pro			5700
 
-#define   CH_I_Less			4000	
-#define   CH_I_Little			9000	
-#define   CH_I_Nor 			10100	
-#define   CH_I_Pro			10500
+#define   CH_I_Pro			10400
 
 /*********DC电流阀值定义*********/
 #define   B_I_12V		 		30		//ma
@@ -68,8 +65,8 @@ extern int32 AD_Data[AD_ChNUM];
 #define   P_I_12V		 		2800		
 
 #define   B_I_DYQ		 	30		//ma
-#define   C_I_DYQ		 	200		
-#define   P_I_DYQ		 	7900
+#define   C_I_DYQ		 	(200 + ReadBuf[DYQ_InitI])		
+#define   P_I_DYQ		 	(7900 + ReadBuf[DYQ_InitI])		
 
 #ifdef  old
 #define DYQRATIO			140//135

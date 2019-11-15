@@ -17,14 +17,19 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define CH_NorTimes			2
 #define ErrTimes				100
 #define USB_BaseTimes		3
+#define CH_IBaseTimes		1
+
 #define Num_BZ				10
 #define NumOfRestarts		4		//重启次数
 #define RestartTime			9000	//重启时间
 #define MaxPow  			525
 #define SUN_PWM		1
 #define CH_PWM			0
+#define LENGTH_DATA               5              //数据长度
 
-
+extern uint16_t flag_data;                            //数据写入标志位
+extern uint16_t DYQInitData[LENGTH_DATA];
+extern uint16_t ReadBuf[LENGTH_DATA];                   //读出的数据
 
 /*********温度定义**********/
 #define AC_P_TEMP			85
@@ -39,6 +44,15 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define   Num_AC_OUT		0x03
 #define   Num_SUN_Ch		0x04	
 #define   Num_CH_Ch			0x05	
+
+
+
+#define   DYQ_CollecTime		0x00
+#define   DYQ_OffTime		0x01
+#define   DYQ_OnVolt			0x02
+#define   DYQ_OffVolt			0x03
+#define   DYQ_InitI			0x04
+
 
 /******电量电压定义******/
 #define   Voltage_0  			9800
@@ -128,8 +142,7 @@ typedef struct _state
 	u8	SW_DET_Press_S 	:1;			//按下计时
 	u8	SW_DET_Op_S		:1;			//操作标志
 
-	u8	CH_LDuty_S			:1;			//低占空比计时标注		
-	u8	SUN_LDuty_S		:1;			
+	u8	SUN_LDuty_S		:1;			//低占空比计时标注		
 	u8	CH_NV_S			:1;			
 	u8	SUN_NV_S			:1;			
 
@@ -171,9 +184,9 @@ typedef struct _BBit
 		{
 			u8  	DYQ_Err				:1;		//输出故障
 			u8  	V12_Err				:1;		//输出故障，可检测拔出自动复位
-			u8  	USB_Err				:1;		//输出故障
+			u8  	USB_Err				:1;		//输出过压故障
 			u8  	ACO_Err				:1;		//输出故障
-			u8  	USB_Err2			:1;		
+			u8  	USB_Err2			:1;		//输出过流短路
 			u8 	RSVD5				:1;
 			u8 	RSVD6				:1;
 			u8 	RSVD7				:1;
@@ -215,6 +228,8 @@ extern pBBit DisplayBit;
 void Printfstatus(void);
 void Capacity_Init(void);
 void Check_Capacity_Sta(void);
+u8 Init_DYQ_OpV(void);
+void Init_DYQ(void);
 void Check_Charge_Sta(void);
 void Operate_CH_Ch(void);
 void Check_TempFAN(void);

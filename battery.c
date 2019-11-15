@@ -1,6 +1,9 @@
 
 #include "battery.h"
 
+uint16_t flag_data;                            //数据写入标志位
+uint16_t DYQInitData[LENGTH_DATA];
+uint16_t ReadBuf[LENGTH_DATA];                   //读出的数据
 
 u8 Vol_Counter[8]={0};
 u8 SOC_Counter[9]={0};
@@ -11,7 +14,8 @@ u8 AC_OUT_Counter[6]={0};
 u8 Charger_Counter[4]={0};
 u8 SUN_Counter[4]={0};
 u8 CheckInputCont[3]={0};
-u8 Check_Ch_Counter[6]={0};
+u8 SUN_I_Counter[3]={0};
+u8 CH_I_Counter[4]={0};
 u8 Restart_Num[6]={0};
 u8 BuzzerCounter = 0;				//蜂鸣器计数器
 
@@ -52,7 +56,6 @@ void Printfstatus(void)
 	IFPrintf(State.SW_DET_CH_S);
 	IFPrintf(State.SW_DET_Press_S);
 	IFPrintf(State.SW_DET_Op_S);
-	IFPrintf(State.CH_LDuty_S);
 	IFPrintf(State.SUN_LDuty_S);
 	IFPrintf(State.AC_OV3min_S);
 	IFPrintf(State.AC_OV15min_S);
@@ -103,6 +106,7 @@ void Printfstatus(void)
 	printf("\r\n");
 	for(u8 i=0;i<AD_ChNUM;i++)
 		printf(" AD%d=%d ",i,AD_Data[i]);
+	printf("\r\n DYQ =%d",ReadBuf[DYQ_InitI]);
 	printf("\r\n");
 	for(u8 j=0;j<10;j++)
 		printf(" RX%d=%d ",j,RX_BUF[j]);
@@ -127,7 +131,7 @@ void Clear_SUN_ERR(void)
 {
 	if(Uptime[SUN_Time] >= OpDuration)
 	{
-		Restart_Num[Num_CH_Ch] = 0;
+		Restart_Num[Num_SUN_Ch] = 0;
 		BuzzerBit.Data_IErr.BitIErr.SUN_Err = 0;
 		DisplayBit.Data_IErr.BitIErr.SUN_Err = 0;
 	}
@@ -597,6 +601,48 @@ void Check_Capacity_Sta(void)
 	}
 }
 
+
+u8 Init_DYQ_OpV(void)
+{
+	if(State.DYQ_S)
+	{
+		ADC_Filter();
+		Feed_Dog();
+		DYQInitData[DYQ_OnVolt] = (u16)AD_Data[AD_V_DYQ];
+		/*大于11.8v才认为是有效电压，否则继续等待*/
+		if(DYQInitData[DYQ_OnVolt] > 11800)	
+		{
+			DYQInitData[DYQ_InitI] = (u16)AD_Data[AD_I_DYQ];
+			DYQ_Op(0);
+			DYQInitData[DYQ_OffTime] = (u16)Open_Time;//记录关点烟器时间
+			return 0;
+		}
+		else 
+			return 1;
+	}
+	else
+	{
+		DYQ_Op(1);
+		return 1;
+	}
+}
+
+void Init_DYQ(void)
+{
+	if((Open_Time > (DYQInitData[DYQ_OffTime] + 500)) 
+	&& (0xAA55 != flag_data))
+	{
+		ADC_Filter();
+		DYQInitData[DYQ_OffVolt] = (u16)AD_Data[AD_V_DYQ];
+		if(DYQInitData[DYQ_OffVolt] > 11000)	//依然大于11V认为点烟口无接负载
+		{
+			DYQInitData[DYQ_CollecTime] = (u16)Open_Time;
+			flag_data = 0xAA55;		//将标志位置为"已写入"
+			FLASH_WriteNWord(&flag_data, FLASH_ADDR_FLAG, 1);
+			FLASH_WriteNWord((uint16_t*)&DYQInitData, FLASH_ADDR_DATA, LENGTH_DATA);
+		}
+	}
+}
 void Check_DYQ_Sta(void)
 {
 	if(State.DYQ_S)
@@ -645,7 +691,7 @@ void Check_DYQ_Sta(void)
 			K_memset(2, DYQ_Counter,sizeof(DYQ_Counter));
 			if(DYQ_Counter[2] > DYQ_BaseTimes)
 			{
-				DYQ_Counter[2] = 2;
+				DYQ_Counter[2] = 0;
 				DYQ_Op(0);
 				Restart_Num[Num_DYQ]++;
 				SET_DYQ_ERR();
@@ -926,142 +972,86 @@ void Check_Charge_Sta(void)
 	{
 		if(State.CH_Ch_S)
 		{
-			Restart_Num[Num_CH_Ch]=0;
-		 	if(AD_Data[AD_I_Charge] >= CH_I_Pro)		//充电器充电过流
+		 	if(AD_Data[AD_I_Charge] >= CH_I_Pro)		//充电过流
 			{
-				Charge_State = CH_Ch;
-				Check_Ch_Counter[0]++;
-				if(Check_Ch_Counter[0] > 1)
+				K_memset(0, CH_I_Counter,sizeof(CH_I_Counter));
+				if(CH_I_Counter[0] > CH_IBaseTimes)
 				{
-					Check_Ch_Counter[0] = 0;
-					Charger_Op(0,CH_PWM,DOWN_Dutycycle);
-					BuzzerBit.Data_IErr.BitIErr.CH_OIErr = 1;
-					DisplayBit.Data_IErr.BitIErr.CH_OIErr = 1;
-				}
-//				if(Charge_Dutycycle > START_Dutycycle)
-//					Charge_Dutycycle = START_Dutycycle;
-//				else if(Charge_Dutycycle > 0)
-//					Charge_Dutycycle--;
-//				Charger_Op(1,CH_PWM,Charge_Dutycycle);
-			}
-			else if(AD_Data[AD_I_Charge] >= CH_I_Nor)	//充电器充电电流正常
-			{
-				Charge_State = CH_Ch;
-				Clear_CH_ERR();
-				if(Charge_Dutycycle < FULL_Dutycycle)	//占空比一直很低
-					State.CH_LDuty_S = 1;
-				else
-				{
-					State.CH_LDuty_S = 0;
-					CH_LowDuty_Time = 0;
-				}
-				if(CH_LowDuty_Time >= CHLDUTYTIME)
-				{
-					State.CH_LDuty_S = 0;
-					CH_LowDuty_Time = 0;
+					CH_I_Counter[0] = 0;
 					Charger_Op(0,CH_PWM,DOWN_Dutycycle);
 					BuzzerBit.Data_IErr.BitIErr.CH_OIErr = 1;
 					DisplayBit.Data_IErr.BitIErr.CH_OIErr = 1;
 				}
 			}
-			else if(AD_Data[AD_I_Charge] >= CH_I_Little)	//充电器充电电流小，缓慢增加占空比
+			else if(AD_Data[AD_I_Charge] >= Zero_I_H)	//充电电流正常
 			{
-				Charge_State = CH_Ch;
-				Clear_CH_ERR();
-				State.CH_LDuty_S = 0;
-				CH_LowDuty_Time = 0;
-				if(Charge_Dutycycle < FULL_Dutycycle)	//缓慢增加占空比
+				K_memset(1, CH_I_Counter,sizeof(CH_I_Counter));
+				if(CH_I_Counter[1] > 3*CH_IBaseTimes)
 				{
-					Check_Ch_Counter[1]++;
-					if(Check_Ch_Counter[1] > 1)
-					{
-						Check_Ch_Counter[1] = 0;
-						Charge_Dutycycle++;
-						Charger_Op(1,CH_PWM,Charge_Dutycycle);
-					}
+					CH_I_Counter[1] = 0;
+					Charge_State = CH_Ch;
+					Clear_CH_ERR();
 				}
 			}
-			else if(AD_Data[AD_I_Charge] >= CH_I_Less)	//充电器充电电流小，增加占空比
+			else if(AD_Data[AD_I_Charge] >= Zero_I_L)	//充电电流小
 			{
-				Charge_State = CH_Ch;
-				Clear_CH_ERR();
-				State.CH_LDuty_S = 0;
-				CH_LowDuty_Time = 0;
-				if(Charge_Dutycycle < FULL_Dutycycle)
+				K_memset(2, CH_I_Counter,sizeof(CH_I_Counter));
+				if(CH_I_Counter[2] > 3*CH_IBaseTimes)
 				{
-					Charge_Dutycycle++;
-					Charger_Op(1,CH_PWM,Charge_Dutycycle);
+					CH_I_Counter[2] = 0;
+					Clear_CH_ERR();
 				}
 			}
-			else if(AD_Data[AD_I_Charge] >= Zero_I_L)	//充电器充电电流小，迅速增加占空比
+			else 									//没有电流
 			{
-				if(AD_Data[AD_I_Charge] >= Zero_I_H)	
+				K_memset(3, CH_I_Counter,sizeof(CH_I_Counter));
+				if(CH_I_Counter[3] > 3*CH_IBaseTimes)
 				{
-					Check_Ch_Counter[4]++;
-					if(Check_Ch_Counter[4] > 10)
-					{
-						Check_Ch_Counter[4] = 0;
-						Charge_State = CH_Ch;
-					}
-				}
-				else
-					Check_Ch_Counter[4] = 0;
-				Clear_CH_ERR();
-				State.CH_LDuty_S = 0;
-				CH_LowDuty_Time = 0;
-				if(Charge_Dutycycle < Middle_Dutycycle)
-				{
-					Charge_Dutycycle+=10;
-					Charger_Op(1,CH_PWM,Charge_Dutycycle);
-				}
-				else if(Charge_Dutycycle < FULL_Dutycycle)
-				{
-					Charge_Dutycycle++;
-					Charger_Op(1,CH_PWM,Charge_Dutycycle);
-				}
-			}
-			else 										//没有电流
-			{
-				Clear_CH_ERR();
-				State.CH_LDuty_S = 0;
-				CH_LowDuty_Time = 0;
-				if(Charge_Dutycycle < Middle_Dutycycle)
-				{
-					Charge_Dutycycle+=10;
-					Charger_Op(1,CH_PWM,Charge_Dutycycle);
-				}
-				else
+					CH_I_Counter[3] = 0;
+					Clear_CH_ERR();
 					Charger_Op(0,CH_PWM,DOWN_Dutycycle);
+				}
 			}
 		}
 		else if(State.SUN_Ch_S)
 		{
 			Restart_Num[Num_SUN_Ch]=0;
-		 	if(AD_Data[AD_I_Charge] >= SUN_I_Pro)			//太阳能充电过流
+		 	if(AD_Data[AD_I_Charge] >= SUN_I_Pro)			//充电过流
 			{
 				Charge_State = SUN_Ch;
 				if(Charge_Dutycycle > START_Dutycycle)
+				{
 					Charge_Dutycycle = START_Dutycycle;
-				else if(Charge_Dutycycle > 0)
+					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
+				}
+				else if(Charge_Dutycycle > 3)
+				{
 					Charge_Dutycycle--;
-				Charger_Op(1,SUN_PWM,Charge_Dutycycle);
+					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
+				}
+				else
+				{
+					Charger_Op(0,SUN_PWM,DOWN_Dutycycle);
+					BuzzerBit.Data_IErr.BitIErr.SUN_OIErr = 1;
+					DisplayBit.Data_IErr.BitIErr.SUN_OIErr = 1;
+				}
 			}
-			else if(AD_Data[AD_I_Charge] >= SUN_I_Nor)		//太阳能充电电流正常
+			else if(AD_Data[AD_I_Charge] >= SUN_I_Nor)		//充电电流正常
 			{
 				Charge_State = SUN_Ch;
 				Clear_SUN_ERR();
-				if(Charge_Dutycycle < PR_Dutycycle)			//占空比太小，说明接入功率大，立即关断
+				if(Charge_Dutycycle < PR_Dutycycle)
 				{	
-					Check_Ch_Counter[2]++;
-					if(Check_Ch_Counter[2] > 1)
+					SUN_I_Counter[0]++;
+					if(SUN_I_Counter[0] > 1)
 					{
-						Check_Ch_Counter[2] = 0;
+						SUN_I_Counter[0] = 0;
 						Charger_Op(0,SUN_PWM,DOWN_Dutycycle);
 						BuzzerBit.Data_IErr.BitIErr.SUN_OIErr = 1;
 						DisplayBit.Data_IErr.BitIErr.SUN_OIErr = 1;
 					}
 				}	
-				else if(Charge_Dutycycle < (PR_Dutycycle + 10))//占空比较小，延时3s关断
+				else if(Charge_Dutycycle < (PR_Dutycycle + 10))
 					State.SUN_LDuty_S = 1;
 				else
 				{
@@ -1077,7 +1067,7 @@ void Check_Charge_Sta(void)
 					DisplayBit.Data_IErr.BitIErr.SUN_OIErr = 1;
 				}	
 			}
-			else if(AD_Data[AD_I_Charge] >= SUN_I_Little)		//太阳能充电电流小，缓慢增加占空比
+			else if(AD_Data[AD_I_Charge] >= SUN_I_Little)		//充电电流小，缓慢增加占空比
 			{
 				Charge_State = SUN_Ch;
 				Clear_SUN_ERR();
@@ -1085,16 +1075,16 @@ void Check_Charge_Sta(void)
 				SUN_LowDuty_Time = 0;
 				if(Charge_Dutycycle < FULL_Dutycycle)
 				{
-					Check_Ch_Counter[3]++;
-					if(Check_Ch_Counter[3] > 1)
+					SUN_I_Counter[1]++;
+					if(SUN_I_Counter[1] > 1)
 					{
-						Check_Ch_Counter[3] = 0;
+						SUN_I_Counter[1] = 0;
 						Charge_Dutycycle++;
 						Charger_Op(1,SUN_PWM,Charge_Dutycycle);
 					}
 				}
 			}
-			else if(AD_Data[AD_I_Charge] >= SUN_I_Less)		//太阳能充电电流小，增加占空比
+			else if(AD_Data[AD_I_Charge] >= SUN_I_Less)		//充电电流小，增加占空比
 			{
 				Charge_State = SUN_Ch;
 				Clear_SUN_ERR();
@@ -1106,19 +1096,19 @@ void Check_Charge_Sta(void)
 					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
 				}
 			}
-			else if(AD_Data[AD_I_Charge] >= Zero_I_L)			//太阳能充电电流小，迅速增加占空比
+			else if(AD_Data[AD_I_Charge] >= Zero_I_L)			
 			{
 				if(AD_Data[AD_I_Charge] >= Zero_I_H)	
 				{
-					Check_Ch_Counter[5]++;
-					if(Check_Ch_Counter[5] > 10)
+					SUN_I_Counter[2]++;
+					if(SUN_I_Counter[2] > 10)
 					{
-						Check_Ch_Counter[5] = 0;
+						SUN_I_Counter[2] = 0;
 						Charge_State = SUN_Ch;
 					}
 				}
 				else
-					Check_Ch_Counter[5] = 0;
+					SUN_I_Counter[2] = 0;
 				Clear_SUN_ERR();
 				State.SUN_LDuty_S = 0;
 				SUN_LowDuty_Time = 0;
@@ -1133,7 +1123,7 @@ void Check_Charge_Sta(void)
 					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
 				}
 			}
-			else 											//没有电流
+			else 										//没有电流
 			{
 				Clear_SUN_ERR();
 				State.SUN_LDuty_S = 0;
@@ -1260,7 +1250,7 @@ void Operate_DYQ(void)
 	{
 		if(Capacity < Capacity_5)	//电量不足
 		{
-			if(DYQ_OUT_State == Out_Normal)//正在放电
+			if(DYQ_OUT_State)
 			{
 				State.DCH_P_S =1 ;
 				BuzzerBit.Data_LowP.BitLowP.DYQ_LowP = 1;
@@ -1299,7 +1289,7 @@ void Operate_12V(void)
 {
 	if(Capacity < Capacity_5)	//电量不足
 	{
-		if(V12_OUT_State == Out_Normal)//正在放电
+		if(V12_OUT_State)
 		{
 			State.DCH_P_S =1 ;
 			BuzzerBit.Data_LowP.BitLowP.V12_LowP = 1;
@@ -1342,7 +1332,7 @@ void Operate_USB(void)
 {
 	if(Capacity < Capacity_5)	//电量不足
 	{
-		if(USB_OUT_State == Out_Normal)//正在放电
+		if(USB_OUT_State)
 		{
 			State.DCH_P_S =1 ;
 			BuzzerBit.Data_LowP.BitLowP.USB_LowP = 1;
@@ -1423,7 +1413,7 @@ void Operate_SUN_Ch(void)
 		&& (AD_Data[AD_V_SUN] < P_V_SUN))
 		{
 			K_memset(1, SUN_Counter,sizeof(SUN_Counter));
-			if(SUN_Counter[1] > (CH_NorTimes))
+			if(SUN_Counter[1] > CH_NorTimes)
 			{
 				SUN_Counter[1] =0 ;
 				State.SUN_NV_S = 1;
@@ -1467,7 +1457,7 @@ void Operate_SUN_Ch(void)
 		else if(AD_Data[AD_V_SUN] >= P_V_SUN)		
 		{
 			K_memset(0, SUN_Counter,sizeof(SUN_Counter));
-			if(SUN_Counter[0] > (CH_NorTimes))
+			if(SUN_Counter[0] > CH_NorTimes)
 			{
 				SUN_Counter[0] =0 ;
 				State.SUN_NV_S = 1;
@@ -1480,7 +1470,7 @@ void Operate_SUN_Ch(void)
 		else if((AD_Data[AD_V_SUN] > N_V_SUN) && (AD_Data[AD_V_SUN] < C_V_SUN))
 		{
 			K_memset(2, SUN_Counter,sizeof(SUN_Counter));
-			if(SUN_Counter[2] > (CH_NorTimes))
+			if(SUN_Counter[2] > CH_NorTimes)
 				Access_SUN = SUN_Ch;
 			if(State.SUN_NV_S)
 				SUN_ErrTimes = ErrTimes;
@@ -1498,7 +1488,7 @@ void Operate_SUN_Ch(void)
 		else
 		{
 			K_memset(3, SUN_Counter,sizeof(SUN_Counter));
-			if(SUN_Counter[3] > (1))
+			if(SUN_Counter[3] > CH_NorTimes)
 			{
 				SUN_Counter[3] =0 ;
 				BuzzerBit.Data_IErr.Byte_IErr &= 0x8f;//清零太阳能Err VErr OIErr位
@@ -1524,7 +1514,7 @@ void Operate_CH_Ch(void)
 		&& (AD_Data[AD_V_Charger] < P_V_Charger))
 		{
 			K_memset(1, Charger_Counter,sizeof(Charger_Counter));
-			if(Charger_Counter[1] > (CH_NorTimes))
+			if(Charger_Counter[1] > CH_NorTimes)
 			{
 				Charger_Counter[1] =0 ;
 				Access_CH = CH_Ch;
@@ -1544,7 +1534,7 @@ void Operate_CH_Ch(void)
 					{
 						CH_SHORT_OUT_L();
 						CH_SHORT_IN();
-						Charger_Op(1,CH_PWM,START_Dutycycle);
+						Charger_Op(1,CH_PWM,FULL_Dutycycle);
 					}
 					else if(Restart_Num[Num_CH_Ch] < NumOfRestarts)
 					{
@@ -1561,7 +1551,7 @@ void Operate_CH_Ch(void)
 						ResTime[Ch_Time] = 0;
 						CH_SHORT_OUT_L();
 						CH_SHORT_IN();
-						Charger_Op(1,CH_PWM,START_Dutycycle);
+						Charger_Op(1,CH_PWM,FULL_Dutycycle);
 					}
 				}
 			}
@@ -1570,7 +1560,7 @@ void Operate_CH_Ch(void)
 		else if(AD_Data[AD_V_Charger] >= P_V_Charger)	
 		{
 			K_memset(0, Charger_Counter,sizeof(Charger_Counter));
-			if(Charger_Counter[0] > (CH_NorTimes))
+			if(Charger_Counter[0] > CH_NorTimes)
 			{
 				Charger_Counter[0] =0 ;
 				Access_CH = CH_Ch;
@@ -1603,14 +1593,12 @@ void Operate_CH_Ch(void)
 		else
 		{
 			K_memset(3, Charger_Counter,sizeof(Charger_Counter));
-			if(Charger_Counter[3] > (1))
+			if(Charger_Counter[3] > CH_NorTimes)
 			{
 				Charger_Counter[3] =0 ;
 				BuzzerBit.Data_IErr.Byte_IErr &= 0xf8;	//清零充电器Err VErr OIErr位
 				DisplayBit.Data_IErr.Byte_IErr &= 0xf8;
-				State.CH_LDuty_S = 0;
 				State.CH_NV_S = 0;
-				CH_LowDuty_Time = 0;
 				Restart_Num[Num_CH_Ch] = 0;
 				Access_CH = CH_None;
 				Operate_SUN_Ch();
@@ -1709,7 +1697,6 @@ void Operate_Buzzer(void)
 				BuzzerTime = 0;
 				BuzzerCounter++;
 			}
-//			for(u8 i=0;i<3;i++);
 		}
 		else
 		{
@@ -1782,61 +1769,5 @@ void Operate_De(void)
 
 
 
-#if 0
-void Check_AC_OUT_Sta(void)
-{
-	if(State.DCS_Finish_S)
-	{
-		State.DCS_Finish_S = 0;
-		if(((RX_BUF[AcsState]  > 0) && (RX_BUF[AcsState]  < 99)) 
-		||((RX_BUF[DcsState]  > 0) && (RX_BUF[DcsState]  < 99)))	// AC_OUT 短路或者过载
-		{
-			K_memset(0, AC_OUT_Counter,sizeof(AC_OUT_Counter));
-			if(AC_OUT_Counter[0] > (AC_OUT_BaseTimes))
-			{
-				AC_OUT_Counter[0] =0 ;
-				AC_OUT_Op(0);
-				Restart_Num[Num_AC_OUT]++;
-				if(!DisplayBit.Data_OErr.BitOErr.ACO_Err)
-				{
-					BuzzerBit.Data_OErr.BitOErr.ACO_Err = 1;
-					DisplayBit.Data_OErr.BitOErr.ACO_Err = 1;
-				}
-			}
-		}
-		else
-		{
-			if(RX_BUF[Powbuf] > 10)		// AC_OUT 有输出
-			{
-				K_memset(2, AC_OUT_Counter,sizeof(AC_OUT_Counter));
-				if(AC_OUT_Counter[2] > (AC_OUT_BaseTimes))
-				{
-					AC_OUT_Counter[2] =0 ;
-					AC_OUT_State = Out_Normal;
-					if(Uptime[AC_Time] >= OpDuration)
-					{
-						BuzzerBit.Data_OErr.BitOErr.ACO_Err = 0;
-						DisplayBit.Data_OErr.BitOErr.ACO_Err = 0;
-					}
-				}
-			}
-			else		// AC_OUT 没有输出
-			{
-				K_memset(3, AC_OUT_Counter,sizeof(AC_OUT_Counter));
-				if(AC_OUT_Counter[3] > (AC_OUT_BaseTimes))
-				{
-					AC_OUT_Counter[3] =0 ;
-					AC_OUT_State = Out_None;
-					if(Uptime[AC_Time] >= OpDuration)
-					{
-						BuzzerBit.Data_OErr.BitOErr.ACO_Err = 0;
-						DisplayBit.Data_OErr.BitOErr.ACO_Err = 0;
-					}
-				}
-			}
-		}
-	}
-}
- #endif
 
 

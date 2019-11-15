@@ -18,11 +18,11 @@
 #include "TASK.h"
 #include "KEY.h"
 #include "LCD.h"
+#include "flash.h"
 #include "battery.h"
 #include "pwm.h"
 #include "sysclock.h"
 #include "vk1024b.h"
-
 
 #define	GPIO_SPEED			GPIO_Speed_50MHz
 #define 	IFPrintf(A)			do{\
@@ -32,7 +32,7 @@
 
 //#define 	old
 //#define 	Power300W
-#define 	DEBUG_MODE		
+//#define 	DEBUG_MODE		
 
 #ifdef DEBUG_MODE
 #define	my_WDG_Config()	
