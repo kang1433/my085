@@ -140,13 +140,13 @@ void SysTick_Handler(void)	//µÎ´ð¶¨Ê±Æ÷1MS
 	task_TickCut();
 	if(Open_Time < 30000)
 		Open_Time++;
-	else if(Open_Time < CLOSETIME)
-	{
-		if((!State.DCH_S) && (!State.CH_S) && (!Access_SUN) && (!Access_CH))
-			Open_Time++;
-		else
-			Open_Time = 30000;
-	}
+//	else if(Open_Time < CLOSETIME)
+//	{
+//		if((!State.DCH_S) && (!State.CH_S) && (!Access_SUN) && (!Access_CH))
+//			Open_Time++;
+//		else
+//			Open_Time = 30000;
+//	}
 	if(LowP_Time < LOWPCLOSETIME)
 	{
 		if(DisplayBit.Data_LowP.Byte_LowP & 0x0f)

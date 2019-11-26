@@ -576,7 +576,7 @@ void Check_Capacity_Sta(void)
 					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
 				}
 			}
-			else if(RX_BUF[SOCbuf] >= SOC_100)
+			else if(RX_BUF[SOCbuf] >= SOC_95)
 			{
 				K_memset(6, SOC_Counter,sizeof(SOC_Counter));
 				if(SOC_Counter[6] > SOC_BaseTimes)
@@ -585,7 +585,7 @@ void Check_Capacity_Sta(void)
 					Capacity=Capacity_100;
 					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
 					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					if(RX_BUF[B3sState]==SAVE_FULL) 
+					if((RX_BUF[B3sState]==SAVE_FULL) && (RX_BUF[SOCbuf] >= SOC_100))
 					{
 						max=(RX_BUF[Cell_V1]>RX_BUF[Cell_V2]) ? RX_BUF[Cell_V1] : RX_BUF[Cell_V2];
 						max=(RX_BUF[Cell_V3]>max) ? RX_BUF[Cell_V3] : max;
@@ -771,15 +771,15 @@ void Check_USB_Sta(void)
 			{
 				USB_Counter[0] = 0;
 				UBS_Op(0);
-				if(Open_Time > 8000)
-				{
+//				if(Open_Time > 8000)
+//				{
 					Restart_Num[Num_USB]++;
 					if(!DisplayBit.Data_OErr.BitOErr.USB_Err)
 					{
 						BuzzerBit.Data_OErr.BitOErr.USB_Err = 1;
 						DisplayBit.Data_OErr.BitOErr.USB_Err = 1;
 					}
-				}
+//				}
 				BuzzerBit.Data_OErr.BitOErr.USB_Err2 = 0;
 				DisplayBit.Data_OErr.BitOErr.USB_Err2 = 0;
 			}
@@ -1024,7 +1024,7 @@ void Check_Charge_Sta(void)
 					Charge_Dutycycle = START_Dutycycle;
 					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
 				}
-				else if(Charge_Dutycycle > 3)
+				else if(Charge_Dutycycle > 2)
 				{
 					Charge_Dutycycle--;
 					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
