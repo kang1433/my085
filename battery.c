@@ -499,7 +499,7 @@ void Check_Capacity_Sta(void)
 			if(RX_BUF[SOCbuf] <= SOC_0)
 			{
 				K_memset(0, SOC_Counter,sizeof(SOC_Counter));
-				if(SOC_Counter[0] > (3*SOC_BaseTimes))
+				if(SOC_Counter[0] > SOC_BaseTimes)
 				{
 					SOC_Counter[0] = 0;
 					Capacity=Capacity_0;
@@ -1175,8 +1175,23 @@ void Check_Input_Sta(void)
 			State.DCH_P_S = 0;
 			State.AC_P_S = 0;
 			LowP_Time = 0;
-			BuzzerBit.Data_LowP.Byte_LowP = 0;
-			DisplayBit.Data_LowP.Byte_LowP = 0;
+
+			if(DisplayBit.Data_LowP.Byte_LowP & 0x0f)
+			{
+				BuzzerBit.Data_LowP.Byte_LowP &= 0xf0;
+				DisplayBit.Data_LowP.Byte_LowP &= 0xf0;
+				UBS_Op(0);
+				DYQ_Op(0);
+				V12_Op(0);
+			}
+			if(DisplayBit.Data_LowP.Byte_LowP & 0xf0)
+			{
+				BuzzerBit.Data_LowP.Byte_LowP &= 0x0f;
+				DisplayBit.Data_LowP.Byte_LowP &= 0x0f;
+				AC_OUT_Op(0);			
+			}
+//			BuzzerBit.Data_LowP.Byte_LowP = 0;
+//			DisplayBit.Data_LowP.Byte_LowP = 0;
 			if(Charge_State == CH_Ch)
 				State.Key_S = 0;
 			if(!State.SW_DET_CH_S)
@@ -1261,13 +1276,13 @@ void Operate_DYQ(void)
 		{
 			if(Restart_Num[Num_DYQ] == 0) 
 			{
-				if((!State.DYQ_S) && (!State.DCH_P_S) && (!DisplayBit.Data_LowP.BitLowP.DYQ_LowP))
+				if((!State.DYQ_S) && (!State.DCH_P_S) && ((DisplayBit.Data_LowP.Byte_LowP & 0x0f) ==0))
 					DYQ_Op(1);
 			}
 				
 			else if(Restart_Num[Num_DYQ] < NumOfRestarts)
 			{
-				if((!State.DYQ_S) && (!State.DCH_P_S) && (!DisplayBit.Data_LowP.BitLowP.DYQ_LowP))
+				if((!State.DYQ_S) && (!State.DCH_P_S) && ((DisplayBit.Data_LowP.Byte_LowP & 0x0f) ==0))
 					State.DYQ_Restart_S = 1;
 			}
 			else if(Restart_Num[Num_DYQ] < (NumOfRestarts+1))
@@ -1300,7 +1315,7 @@ void Operate_12V(void)
 	{
 		if(Restart_Num[Num_V12] == 0)
 		{
-			if((!State.V12_S) && (!State.DCH_P_S) && (!DisplayBit.Data_LowP.BitLowP.V12_LowP))
+			if((!State.V12_S) && (!State.DCH_P_S) && ((DisplayBit.Data_LowP.Byte_LowP & 0x0f) ==0))
 			{
 				I_12V_PullL();
 				I_12V_SetAn();
@@ -1309,7 +1324,7 @@ void Operate_12V(void)
 		}
 		else if(Restart_Num[Num_V12] < NumOfRestarts)
 		{
-			if((!State.V12_S) && (!State.DCH_P_S) && (!DisplayBit.Data_LowP.BitLowP.V12_LowP))
+			if((!State.V12_S) && (!State.DCH_P_S) && ((DisplayBit.Data_LowP.Byte_LowP & 0x0f) ==0))
 				State.V12_Restart_S = 1;
 		}
 		else if(Restart_Num[Num_V12] < (NumOfRestarts+1))
@@ -1343,12 +1358,12 @@ void Operate_USB(void)
 	{
 		if(Restart_Num[Num_USB] == 0) 
 		{
-			if((!State.USB_S) && (!State.DCH_P_S) && (!DisplayBit.Data_LowP.BitLowP.USB_LowP))
+			if((!State.USB_S) && (!State.DCH_P_S) && ((DisplayBit.Data_LowP.Byte_LowP & 0x0f) ==0))
 				UBS_Op(1);
 		}
 		else if(Restart_Num[Num_USB] < NumOfRestarts)
 		{
-			if((!State.USB_S) && (!State.DCH_P_S) && (!DisplayBit.Data_LowP.BitLowP.USB_LowP))
+			if((!State.USB_S) && (!State.DCH_P_S) && ((DisplayBit.Data_LowP.Byte_LowP & 0x0f) ==0))
 				State.USB_Restart_S = 1;
 		}
 		else if(Restart_Num[Num_USB] < (NumOfRestarts+1))
