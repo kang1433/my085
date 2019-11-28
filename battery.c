@@ -1178,20 +1178,14 @@ void Check_Input_Sta(void)
 
 			if(DisplayBit.Data_LowP.Byte_LowP & 0x0f)
 			{
-				BuzzerBit.Data_LowP.Byte_LowP &= 0xf0;
-				DisplayBit.Data_LowP.Byte_LowP &= 0xf0;
-				UBS_Op(0);
-				DYQ_Op(0);
-				V12_Op(0);
+				if((BuzzerBit.Data_LowP.Byte_LowP & 0x0f) == 0)
+					DisplayBit.Data_LowP.Byte_LowP &= 0xf0;
 			}
 			if(DisplayBit.Data_LowP.Byte_LowP & 0xf0)
 			{
-				BuzzerBit.Data_LowP.Byte_LowP &= 0x0f;
-				DisplayBit.Data_LowP.Byte_LowP &= 0x0f;
-				AC_OUT_Op(0);			
+				if((BuzzerBit.Data_LowP.Byte_LowP & 0xf0) == 0)
+					DisplayBit.Data_LowP.Byte_LowP &= 0x0f;
 			}
-//			BuzzerBit.Data_LowP.Byte_LowP = 0;
-//			DisplayBit.Data_LowP.Byte_LowP = 0;
 			if(Charge_State == CH_Ch)
 				State.Key_S = 0;
 			if(!State.SW_DET_CH_S)
