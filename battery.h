@@ -15,7 +15,7 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define In_BaseTimes			0
 #define AC_OUT_BaseTimes	1
 #define CH_NorTimes			2
-#define ErrTimes				100
+//#define ErrTimes				100
 #define USB_BaseTimes		3
 #define CH_IBaseTimes		1
 
@@ -197,12 +197,12 @@ typedef struct _BBit
 	{	struct
 		{
 			u8  	CH_Err				:1;		//故障消失可自动复位
-			u8  	CH_Verr				:1;		//充电电压不对//故障消失可自动复位
-			u8  	CH_OIErr			:1;		//充电过流MOS  保护
-			u8 	CH_TErr				:1;
+			u8  	CH_Verr				:1;		//充电电压不对，拔出对应充电可复位
+			u8  	CH_OCErr			:1;		//充电过流MOS  保护
+			u8 	CH_TErr				:1;		//充电口过温
 			u8  	SUN_Err				:1;		//故障消失可自动复位
-			u8  	SUN_VErr			:1;		//充电电压不对//故障消失可自动复位
-			u8 	SUN_OIErr			:1;		//充电过流MOS  保护
+			u8  	SUN_VErr			:1;		//充电电压不对，拔出对应充电可复位
+			u8 	SUN_OCErr			:1;		//充电过流MOS  保护
 			u8 	SUN_TErr			:1;		//充电口过温
 		}BitIErr;
 		u8 Byte_IErr;
