@@ -3,11 +3,11 @@
 
 #include "include.h"
 
-extern u8 Vol_Counter[8];
-extern u8 SOC_Counter[9];
+extern u8 Vol_Count[7];
+extern u8 SOC_Count[9];
 
 extern u8 Restart_Num[];
-extern u8 BuzzerCounter;				//蜂鸣器计数器
+extern u8 Buzzer_Count;				//蜂鸣器计数器
 #define SOC_BaseTimes		2
 #define Vol_BaseTimes		10
 #define V12_BaseTimes		3
@@ -15,17 +15,16 @@ extern u8 BuzzerCounter;				//蜂鸣器计数器
 #define In_BaseTimes			0
 #define AC_OUT_BaseTimes	1
 #define CH_NorTimes			2
-//#define ErrTimes				100
 #define USB_BaseTimes		3
 #define CH_IBaseTimes		1
 
 #define Num_BZ				10
-#define NumOfRestarts		4		//重启次数
+#define NumOfRestarts		4		//启动次数
 #define RestartTime			9000	//重启时间
-#define MaxPow  			525
-#define SUN_PWM		1
-#define CH_PWM			0
-#define LENGTH_DATA               5              //数据长度
+#define MaxPow  				525
+#define SUN_PWM			1
+#define CH_PWM				0
+#define LENGTH_DATA		5              //数据长度
 
 extern uint16_t flag_data;                            //数据写入标志位
 extern uint16_t DYQInitData[LENGTH_DATA];
@@ -60,8 +59,8 @@ extern uint16_t ReadBuf[LENGTH_DATA];                   //读出的数据
 #define   Voltage_20  			10500
 #define   Voltage_40  			11000
 #define   Voltage_60		  	11400  //3
-#define   Voltage_80		  	11800 
-#define   Voltage_90		 	12300
+#define   Voltage_80		  	11900 
+#define   Voltage_90		 	12400
 #define   Voltage_100		 	12600
 #define   DYQ_utmost	 		12800  
 
@@ -153,6 +152,7 @@ typedef struct _state
 	u8	B3S_Finish_S 		:1;			
 	u8	DCS_Finish_S 		:1;			
 	u8	Print_S				:1;			
+	u8	Test_Mod_S			:1;			
 	u8	DCH_P_S			:1;			
 	u8	AC_P_S				:1;			
 	u8	H_Temp_S			:1;			

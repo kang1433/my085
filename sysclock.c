@@ -209,7 +209,7 @@ void SysTick_Handler(void)	//滴答定时器1MS
 		B3S_RX_Time--;
 	else
 	{
-		if(!DisplayBit.Data_Bat.BitBat.B3Sc_Err)
+		if((!DisplayBit.Data_Bat.BitBat.B3Sc_Err) && (!State.Test_Mod_S))
 		{
 			BuzzerBit.Data_Bat.BitBat.B3Sc_Err = 1;
 			DisplayBit.Data_Bat.BitBat.B3Sc_Err = 1;
@@ -219,7 +219,7 @@ void SysTick_Handler(void)	//滴答定时器1MS
 		DCS_RX_Time--;
 	else
 	{
-		if(!DisplayBit.Data_Bat.BitBat.ACS_Err)
+		if((!DisplayBit.Data_Bat.BitBat.ACS_Err) && (!State.Test_Mod_S))
 		{
 			BuzzerBit.Data_Bat.BitBat.ACS_Err = 1;
 			DisplayBit.Data_Bat.BitBat.ACS_Err = 1;

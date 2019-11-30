@@ -48,6 +48,8 @@ void StartInitialization(void)
 	Vk1024B_DisAll(0);
 	while(GET_SW_DET==1)	//15ms
 	{
+		if((Open_Time < 300) && (GET_KEY==0))
+			State.Test_Mod_S=1;	
 		if(((Open_Time%300) < 20) && ((Open_Time%300) > 10))
 		{
 			Feed_Dog();
@@ -105,8 +107,8 @@ void StartInitialization(void)
 			ADC_Filter();
 		}
 	}
-	memset(SOC_Counter,0,sizeof(SOC_Counter));
-	memset(Vol_Counter,0,sizeof(Vol_Counter));
+	memset(SOC_Count,0,sizeof(SOC_Count));
+	memset(Vol_Count,0,sizeof(Vol_Count));
 	FLASH_ReadNWord(ReadBuf, FLASH_ADDR_DATA, LENGTH_DATA);
 }
 
