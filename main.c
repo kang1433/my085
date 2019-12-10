@@ -88,6 +88,8 @@ void StartInitialization(void)
 	{
 		while(Open_Time < 2000) 
 		{
+			if((Open_Time < 300) && (GET_KEY==0))
+				State.Test_Mod_S=1;	
 			if((Open_Time%300) < 20)
 			{
 				printf("B3S?\r\n");
@@ -116,9 +118,10 @@ main()
 {
 	SysTickInit();
 	PORTInit();
-	Charge_IOInit();
+//	Charge_IOInit();
 	Uart_Init(9600);
-	TIM1_CH1_PWM_Init();
+	TIM1_PWM_Config();
+//	TIM1_CH1_PWM_Init();
 	KyeConfig();
 	ADC1_Init();
 	Vk1024B_Init();
