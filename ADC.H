@@ -71,7 +71,7 @@ extern int32 AD_Data[AD_ChNUM];
 #ifdef  old
 #define DYQRATIO			140//135
 #else
-#define DYQRATIO			136
+#define DYQRATIO			132.33 	// 136
 #endif
 
 

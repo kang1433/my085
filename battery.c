@@ -665,21 +665,19 @@ void Check_DYQ_Sta(void)
 	{
 		P_I_DYQ_Vau = P_I_DYQ;
 		if(AD_Data[AD_V_Bat] <= 9900)
-			P_I_DYQ_Vau = P_I_DYQ;
-		else if((AD_Data[AD_V_Bat] > 9900) && (AD_Data[AD_V_Bat] <= 11400))
-			P_I_DYQ_Vau -= 0.39*(AD_Data[AD_V_Bat] - 9900);
-		else if((AD_Data[AD_V_Bat] > 11400) && (AD_Data[AD_V_Bat] <= 11900))
+			P_I_DYQ_Vau -= 0.15*(9900 - AD_Data[AD_V_Bat]);
+		else if((AD_Data[AD_V_Bat] > 9900) && (AD_Data[AD_V_Bat] <= 12000))
+			P_I_DYQ_Vau -= 0.33*(AD_Data[AD_V_Bat] - 9900);
+		else if((AD_Data[AD_V_Bat] > 12000) && (AD_Data[AD_V_Bat] <= 12400))
 		{
-			P_I_DYQ_Vau -=585;
-			P_I_DYQ_Vau += 0.66*(AD_Data[AD_V_Bat] - 11400);
+			P_I_DYQ_Vau -=693;
+			P_I_DYQ_Vau += 0.65*(AD_Data[AD_V_Bat] - 12000);
 		}
-		else if((AD_Data[AD_V_Bat] > 11900) && (AD_Data[AD_V_Bat] <= 12200))
+		else if(AD_Data[AD_V_Bat] > 12400)
 		{
-			P_I_DYQ_Vau -=255;
-			P_I_DYQ_Vau += 2.25*(AD_Data[AD_V_Bat] - 11900);
+			P_I_DYQ_Vau -=433;
+			P_I_DYQ_Vau += 5.36*(AD_Data[AD_V_Bat] - 12400);
 		}
-		else
-			P_I_DYQ_Vau += 420;
 		
 		if((AD_Data[AD_V_Bat] > (Voltage_100+100)) || ((AD_Data[AD_V_DYQ] > DYQ_utmost) && (Uptime[DYQ_Time] > 1000)))
 		{

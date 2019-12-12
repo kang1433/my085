@@ -118,10 +118,10 @@ main()
 {
 	SysTickInit();
 	PORTInit();
-//	Charge_IOInit();
+	Charge_IOInit();
 	Uart_Init(9600);
-	TIM1_PWM_Config();
-//	TIM1_CH1_PWM_Init();
+//	TIM1_PWM_Config();
+	TIM1_CH1_PWM_Init();
 	KyeConfig();
 	ADC1_Init();
 	Vk1024B_Init();
