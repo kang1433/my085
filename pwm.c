@@ -28,6 +28,7 @@ void TIM1_CH1_PWM_Init(void)
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef  TIM_OCInitStructure;
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
+	TIM_DeInit(TIM1);
 	/* TIM1时基单元配置 */
 	TIM_TimeBaseStructure.TIM_Prescaler = TIM1_PRESCALER_VALUE;		 //预分频值
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;		 //向上计数模式

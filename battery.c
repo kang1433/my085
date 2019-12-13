@@ -625,8 +625,8 @@ u8 Init_DYQ_OpV(void)
 		ADC_Filter();
 		Feed_Dog();
 		DYQInitData[DYQ_OnVolt] = (u16)AD_Data[AD_V_DYQ];
-		/*大于11.8v才认为是有效电压，否则继续等待*/
-		if(DYQInitData[DYQ_OnVolt] > 11800)	
+		/*大于12v才认为是有效电压，否则继续等待*/
+		if(DYQInitData[DYQ_OnVolt] > 12000)	
 		{
 			DYQInitData[DYQ_InitI] = (u16)AD_Data[AD_I_DYQ];
 			DYQ_Op(0);
@@ -650,7 +650,7 @@ void Init_DYQ(void)
 	{
 		ADC_Filter();
 		DYQInitData[DYQ_OffVolt] = (u16)AD_Data[AD_V_DYQ];
-		if(DYQInitData[DYQ_OffVolt] > 11000)	//依然大于11V认为点烟口无接负载
+		if(DYQInitData[DYQ_OffVolt] > 11500)	//依然大于11.5V认为点烟口无接负载
 		{
 			DYQInitData[DYQ_CollecTime] = (u16)Open_Time;
 			flag_data = 0xAA55;		//将标志位置为"已写入"
