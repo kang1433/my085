@@ -33,6 +33,8 @@ pBBit DisplayBit;
 
 u16 Charge_Dutycycle=START_Dutycycle;
 u16 P_I_DYQ_Vau;
+u16 C_V_Charger;
+u16 P_V_Charger;
 
 void Printfstatus(void)
 {
@@ -646,6 +648,7 @@ u8 Init_DYQ_OpV(void)
 void Init_DYQ(void)
 {
 	if((Open_Time > (DYQInitData[DYQ_OffTime] + 500)) 
+//	&& (Open_Time <  3500)
 	&& (0xAA55 != flag_data))
 	{
 		ADC_Filter();
@@ -766,10 +769,11 @@ void Check_12V_Sta(void)
 		V12_I_Sta(2);
 	else
 	{
-		Restart_Num[Num_V12] = 0;
-		V12_OUT_State = Out_None;
-		BuzzerBit.Data_OErr.BitOErr.V12_Err = 0;
-		DisplayBit.Data_OErr.BitOErr.V12_Err = 0;
+		V12_I_Sta(1);
+//		Restart_Num[Num_V12] = 0;
+//		V12_OUT_State = Out_None;
+//		BuzzerBit.Data_OErr.BitOErr.V12_Err = 0;
+//		DisplayBit.Data_OErr.BitOErr.V12_Err = 0;
 	}
 }
 
@@ -1554,6 +1558,16 @@ void Operate_SUN_Ch(void)
 void Operate_CH_Ch(void)
 {
 	u8 CH_ErrTimes;
+	if(State.Test_Mod_S)
+	{
+		C_V_Charger = C_V_Charger_Test;
+		P_V_Charger = P_V_Charger_Test;
+	}
+	else
+	{
+		C_V_Charger = C_V_Charger_Normal;
+		P_V_Charger = P_V_Charger_Normal;
+	}
 	if(!State.CH_Ch_S)	
 	{
 		/*充电器接入电压正常*/

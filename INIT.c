@@ -176,6 +176,10 @@ void AC_OUT_Op(u8 sta )
 		AC_OUT_State = Out_None;
 		Uptime[AC_Time] = 0;
 		State.Key_S = 0;
+		State.AC_OV3min_S =0;
+		State.AC_OV15min_S =0;
+		ACOVTime[0] =0;
+		ACOVTime[1] =0;
 	}
 }
 void V12_Op(u8 sta )		

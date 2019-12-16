@@ -72,9 +72,12 @@ void StartInitialization(void)
 		FLASH_ReadNWord(&flag_data, FLASH_ADDR_FLAG, 1); //读出标志位, 看是否已经写入数据	
 		if(0xAA55 != flag_data)
 		{
-			while(Init_DYQ_OpV());//等点烟器开启
+			while(Init_DYQ_OpV()) 	//等点烟器开启
+			{
+//				if(Open_Time >= 3500)
+//					break;
+			}
 		}
-		
 		while(Open_Time < 4000)
 		{
 			Init_DYQ();

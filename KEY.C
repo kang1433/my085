@@ -73,7 +73,15 @@ void CheckSWDET(void)
 	{
 		LowP_Time = 0;
 //		Open_Time = 30000;
-		POW_Op(0);
+		if(State.SW_DET_CH_S)//有充电器在
+		{
+			State.SW_DET_S = 0;	//置位关机
+			BUZZER_ENABLE;
+			for(i=0;i < 1500000;i++);
+			BUZZER_DISABLE;
+		}
+		else
+			POW_Op(0);
 	}
 }
 

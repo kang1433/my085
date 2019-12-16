@@ -31,7 +31,7 @@
 							while(0)
 
 //#define 	old
-//#define 	Power300W
+#define 	Power300W
 //#define 	DEBUG_MODE		
 
 #ifdef DEBUG_MODE
