@@ -125,7 +125,6 @@ void Charger_Op(u8 sta, u8 Channel,u8 Dutycycle)
 	tim1_pulse  = (TIM1_PERIOD + 1)*Dutycycle / 100;			
 	if(sta)
 	{
-//		mPrintf(" Ch%d%\r\n",Dutycycle);
 		if(Channel)
 		{
 			State.SUN_Ch_S = sta;
@@ -141,8 +140,7 @@ void Charger_Op(u8 sta, u8 Channel,u8 Dutycycle)
 	}
 	else
 	{
-		mPrintf(" Ch_L\r\n");
-		Charge_Dutycycle=START_Dutycycle;
+		Charge_Dutycycle=START_Dutycycle_SUN;
 		Charge_State = CH_None;
 		if(Channel)
 		{

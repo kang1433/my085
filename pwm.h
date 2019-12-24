@@ -3,12 +3,14 @@
 #define __PWM_H
 #include "include.h"
 
-//#define ARR 			125
-#define FULL_Dutycycle 	100
-#define START_Dutycycle	5
-#define Middle_Dutycycle	80
-#define DOWN_Dutycycle 	0
-#define PR_Dutycycle 		30
+//#define ARR 				125
+#define FULL_Dutycycle 		100
+#define START_Dutycycle_SUN	5
+#define START_Dutycycle_CH	5
+#define Middle_Dutycycle		80
+#define DOWN_Dutycycle 		0
+#define PR_Dutycycle_SUN 	30
+#define PR_Dutycycle_CH 		20
 
 
 #define TIM1_COUNTER_CLOCK		12000000                 //计数时钟(12M次/秒)

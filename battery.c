@@ -31,7 +31,7 @@ p_Charge_State Access_CH;
 pBBit BuzzerBit;
 pBBit DisplayBit;
 
-u16 Charge_Dutycycle=START_Dutycycle;
+u16 Charge_Dutycycle=START_Dutycycle_SUN;
 u16 P_I_DYQ_Vau;
 u16 C_V_Charger;
 u16 P_V_Charger;
@@ -993,14 +993,24 @@ void Check_Charge_Sta(void)
 	}
 	else
 	{
+/**************************************************************/
 		if(State.CH_Ch_S)
 		{
-		 	if(AD_Data[AD_I_Charge] >= CH_I_Pro)		//充电过流
+		 	if(AD_Data[AD_I_Charge] >= CH_I_Pro)			//充电过流
 			{
-				K_memset(0, CH_I_Count,sizeof(CH_I_Count));
-				if(CH_I_Count[0] > CH_IBaseTimes)
+				Charge_State = CH_Ch;
+				if(Charge_Dutycycle > START_Dutycycle_CH)
 				{
-					CH_I_Count[0] = 0;
+					Charge_Dutycycle = START_Dutycycle_CH;
+					Charger_Op(1,CH_PWM,Charge_Dutycycle);
+				}
+				else if(Charge_Dutycycle > 2)
+				{
+					Charge_Dutycycle --;
+					Charger_Op(1,CH_PWM,Charge_Dutycycle);
+				}
+				else
+				{
 					Charger_Op(0,CH_PWM,DOWN_Dutycycle);
 					if(!DisplayBit.Data_IErr.BitIErr.CH_OCErr)
 					{
@@ -1009,45 +1019,122 @@ void Check_Charge_Sta(void)
 					}
 				}
 			}
-			else if(AD_Data[AD_I_Charge] >= Zero_I_H)	//充电电流正常
+			else if(AD_Data[AD_I_Charge] >= CH_I_Nor)		//充电电流正常
 			{
-				K_memset(1, CH_I_Count,sizeof(CH_I_Count));
-				if(CH_I_Count[1] > 3*CH_IBaseTimes)
+				Charge_State = CH_Ch;
+				Clear_CH_ERR();
+				if(Charge_Dutycycle < PR_Dutycycle_CH)
+				{	
+					CH_I_Count[0]++;
+					if(CH_I_Count[0] > 1)
+					{
+						CH_I_Count[0] = 0;
+						Charger_Op(0,CH_PWM,DOWN_Dutycycle);
+						if(!DisplayBit.Data_IErr.BitIErr.CH_OCErr)
+						{
+							BuzzerBit.Data_IErr.BitIErr.CH_OCErr = 1;
+							DisplayBit.Data_IErr.BitIErr.CH_OCErr = 1;
+						}
+					}
+				}	
+				else if(Charge_Dutycycle < (PR_Dutycycle_CH + 10))
+					State.CH_LDuty_S = 1;
+				else
 				{
-					CH_I_Count[1] = 0;
-					Charge_State = CH_Ch;
-					Clear_CH_ERR();
+					State.CH_LDuty_S = 0;
+					CH_LowDuty_Time = 0;
 				}
-			}
-			else if(AD_Data[AD_I_Charge] >= Zero_I_L)	//充电电流小
-			{
-				K_memset(2, CH_I_Count,sizeof(CH_I_Count));
-				if(CH_I_Count[2] > 3*CH_IBaseTimes)
+				if(CH_LowDuty_Time >= CHLDUTYTIME)
 				{
-					CH_I_Count[2] = 0;
-					Clear_CH_ERR();
-				}
-			}
-			else 									//没有电流
-			{
-				K_memset(3, CH_I_Count,sizeof(CH_I_Count));
-				if(CH_I_Count[3] > 3*CH_IBaseTimes)
-				{
-					CH_I_Count[3] = 0;
-					Clear_CH_ERR();
+					State.CH_LDuty_S = 0;
+					CH_LowDuty_Time = 0;
 					Charger_Op(0,CH_PWM,DOWN_Dutycycle);
+					if(!DisplayBit.Data_IErr.BitIErr.CH_OCErr)
+					{
+						BuzzerBit.Data_IErr.BitIErr.CH_OCErr = 1;
+						DisplayBit.Data_IErr.BitIErr.CH_OCErr = 1;
+					}
+				}	
+			}
+			else if(AD_Data[AD_I_Charge] >= CH_I_Little)		//充电电流小，缓慢增加占空比
+			{
+				Charge_State = CH_Ch;
+				Clear_CH_ERR();
+				State.CH_LDuty_S = 0;
+				CH_LowDuty_Time = 0;
+				if(Charge_Dutycycle < FULL_Dutycycle)
+				{
+					CH_I_Count[1]++;
+					if(CH_I_Count[1] > 1)
+					{
+						CH_I_Count[1] = 0;
+						Charge_Dutycycle++;
+						Charger_Op(1,CH_PWM,Charge_Dutycycle);
+					}
 				}
 			}
-		}
+			else if(AD_Data[AD_I_Charge] >= CH_I_Less)		//充电电流小，增加占空比
+			{
+				Charge_State = CH_Ch;
+				Clear_CH_ERR();
+				State.CH_LDuty_S = 0;
+				CH_LowDuty_Time = 0;
+				if(Charge_Dutycycle < FULL_Dutycycle)
+				{
+					Charge_Dutycycle++;
+					Charger_Op(1,CH_PWM,Charge_Dutycycle);
+				}
+			}
+			else if(AD_Data[AD_I_Charge] >= Zero_I_L)			
+			{
+				if(AD_Data[AD_I_Charge] >= Zero_I_H)	
+				{
+					CH_I_Count[2]++;
+					if(CH_I_Count[2] > 10)
+					{
+						CH_I_Count[2] = 0;
+						Charge_State = CH_Ch;
+					}
+				}
+				else
+					CH_I_Count[2] = 0;
+				Clear_CH_ERR();
+				State.CH_LDuty_S = 0;
+				CH_LowDuty_Time = 0;
+				if(Charge_Dutycycle < Middle_Dutycycle)
+				{
+					Charge_Dutycycle+=10;
+					Charger_Op(1,CH_PWM,Charge_Dutycycle);
+				}
+				else if(Charge_Dutycycle < FULL_Dutycycle)
+				{
+					Charge_Dutycycle++;
+					Charger_Op(1,CH_PWM,Charge_Dutycycle);
+				}
+			}
+			else 										//没有电流
+			{
+				Clear_CH_ERR();
+				State.CH_LDuty_S = 0;
+				CH_LowDuty_Time = 0;
+				if(Charge_Dutycycle < Middle_Dutycycle)
+				{
+					Charge_Dutycycle+=10;
+					Charger_Op(1,CH_PWM,Charge_Dutycycle);
+				}
+				else
+					Charger_Op(0,CH_PWM,DOWN_Dutycycle);
+			}
+		}	
+/**************************************************************/
 		else if(State.SUN_Ch_S)
 		{
-			Restart_Num[Num_SUN_Ch]=0;
 		 	if(AD_Data[AD_I_Charge] >= SUN_I_Pro)			//充电过流
 			{
 				Charge_State = SUN_Ch;
-				if(Charge_Dutycycle > START_Dutycycle)
+				if(Charge_Dutycycle > START_Dutycycle_SUN)
 				{
-					Charge_Dutycycle = START_Dutycycle;
+					Charge_Dutycycle = START_Dutycycle_SUN;
 					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
 				}
 				else if(Charge_Dutycycle > 2)
@@ -1069,7 +1156,7 @@ void Check_Charge_Sta(void)
 			{
 				Charge_State = SUN_Ch;
 				Clear_SUN_ERR();
-				if(Charge_Dutycycle < PR_Dutycycle)
+				if(Charge_Dutycycle < PR_Dutycycle_SUN)
 				{	
 					SUN_I_Count[0]++;
 					if(SUN_I_Count[0] > 1)
@@ -1083,7 +1170,7 @@ void Check_Charge_Sta(void)
 						}
 					}
 				}	
-				else if(Charge_Dutycycle < (PR_Dutycycle + 10))
+				else if(Charge_Dutycycle < (PR_Dutycycle_SUN + 10))
 					State.SUN_LDuty_S = 1;
 				else
 				{
@@ -1476,7 +1563,7 @@ void Operate_SUN_Ch(void)
 					{
 						CH_SHORT_OUT_L();
 						CH_SHORT_IN();
-						Charger_Op(1,SUN_PWM,START_Dutycycle);
+						Charger_Op(1,SUN_PWM,START_Dutycycle_SUN);
 					}
 					else if(Restart_Num[Num_SUN_Ch] < NumOfRestarts)
 					{
@@ -1493,7 +1580,7 @@ void Operate_SUN_Ch(void)
 						ResTime[SUN_Time] = 0;
 						CH_SHORT_OUT_L();
 						CH_SHORT_IN();
-						Charger_Op(1,SUN_PWM,START_Dutycycle);
+						Charger_Op(1,SUN_PWM,START_Dutycycle_SUN);
 					}
 				}
 			}
@@ -1595,7 +1682,7 @@ void Operate_CH_Ch(void)
 					{
 						CH_SHORT_OUT_L();
 						CH_SHORT_IN();
-						Charger_Op(1,CH_PWM,FULL_Dutycycle);
+						Charger_Op(1,CH_PWM,START_Dutycycle_CH);
 					}
 					else if(Restart_Num[Num_CH_Ch] < NumOfRestarts)
 					{
@@ -1612,7 +1699,7 @@ void Operate_CH_Ch(void)
 						ResTime[Ch_Time] = 0;
 						CH_SHORT_OUT_L();
 						CH_SHORT_IN();
-						Charger_Op(1,CH_PWM,FULL_Dutycycle);
+						Charger_Op(1,CH_PWM,START_Dutycycle_CH);
 					}
 				}
 			}

@@ -9,7 +9,7 @@
 #define   R_B3S_S		"B3S_" 
 #define   R_COM_S		"KCOM_" 
 
-#define   T_B3S_S		"B3S?_3V191216\r\n" 
+#define   T_B3S_S		"B3S?_3V191224\r\n" 
 #define   T_ACS_S		"ACS?\r\n" 
 #define   T_DCON_S		"DCON\r\n" 
 #define   T_DCOFF_S		"DCOFF\r\n" 

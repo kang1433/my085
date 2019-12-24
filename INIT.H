@@ -34,17 +34,10 @@ extern u16 Charge_Dutycycle;
 #define I_V12_L					GPIO_ResetBits(PORT_I_12V,PIN_I_12V)			
 #define I_V12_H					GPIO_SetBits(PORT_I_12V,PIN_I_12V)			
 
-#ifdef  old
-#define PORT_FAN 				GPIOB		//æ…∞ÂΩ≈Œª
-#define PORT_BT_STA			GPIOA		
-#define PIN_FAN					GPIO_Pin_4	
-#define PIN_BT_STA				GPIO_Pin_12		
-#else
-#define PORT_FAN 				GPIOA		
-#define PORT_BT_STA			GPIOB		
-#define PIN_FAN					GPIO_Pin_12		
-#define PIN_BT_STA				GPIO_Pin_4		
-#endif
+#define PORT_FAN 				GPIOA		//	GPIOB 	æ…∞ÂΩ≈Œª
+#define PORT_BT_STA			GPIOB		//	GPIOA
+#define PIN_FAN					GPIO_Pin_12	//	GPIO_Pin_4
+#define PIN_BT_STA				GPIO_Pin_4	//	GPIO_Pin_12
 
 
 /*…Ë±∏øÿ÷∆Ω≈*/

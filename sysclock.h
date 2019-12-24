@@ -8,6 +8,7 @@
 #define		UTMOSTTIME		65500
 #define		OpDuration			3000
 #define		SUNLDUTYTIME		3000
+#define		CHLDUTYTIME		3000
 #define		OneHour				3600000
 #define		Onemin				58000
 #define		CLOSETIME			(1*3600000)			//放置关机时间小时
@@ -27,6 +28,7 @@ extern u16	UART_RX_Time;      		//串口接收时间
 extern u16	B3S_RX_Time;      		
 extern u16	DCS_RX_Time;      		
 extern u16	SUN_LowDuty_Time;
+extern u16	CH_LowDuty_Time;
 	
 extern u32	Open_Time; 				//开机时间  
 extern u32	LowP_Time; 			

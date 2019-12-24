@@ -39,43 +39,8 @@ extern int32 AD_Data[AD_ChNUM];
 #define   AD_I_DYQ		 	0x07	
 
 
-/*********充电电压阀值定义*********/
-#define   Diode_V				450					//单位mV
-#define   N_V_Charger		(9000- Diode_V)		//单位mV
-#define   C_V_Charger_Normal	(12600-Diode_V)
-#define   P_V_Charger_Normal	(13100-Diode_V)		
-#define   C_V_Charger_Test	(10500-Diode_V)
-#define   P_V_Charger_Test	(14100-Diode_V)		
-
-
-#define   N_V_SUN			(9000- Diode_V)		//单位mV
-#define   C_V_SUN			(12500-Diode_V)
-#define   P_V_SUN			(24500-Diode_V)	
-/*********充电电流阀值定义*********/
-#define   Zero_I_L			150		//ma
-#define   Zero_I_H			250		//ma
-
-#define   SUN_I_Less			2500	
-#define   SUN_I_Little			4000	
-#define   SUN_I_Nor 			5100	
-#define   SUN_I_Pro			5700
-
-#define   CH_I_Pro			10400
-
-/*********DC电流阀值定义*********/
-#define   B_I_12V		 		30		//ma
-#define   C_I_12V		 		100		
-#define   P_I_12V		 		2800		
-
-#define   B_I_DYQ		 	30		//ma
-#define   C_I_DYQ		 	(200 + ReadBuf[DYQ_InitI])		
-#define   P_I_DYQ		 	(7900 + ReadBuf[DYQ_InitI])		
-
-#ifdef  old
-#define DYQRATIO			140//135
-#else
 #define DYQRATIO			132.33 	// 136
-#endif
+
 
 
 void ADC1_Init(void);

@@ -16,6 +16,7 @@ u32	Open_Time =0; 			//开机时间
 u32	LowP_Time =0; 			//低电量时间  
 u32	DYQ_INIT_Time =0; 			//
 u16	SUN_LowDuty_Time =0; 		//低占空比时间  
+u16	CH_LowDuty_Time =0; 		//低占空比时间  
 
 u16 ResTime[6];		//重启时间
 u16 Uptime[6];		//正常运行时间
@@ -154,6 +155,9 @@ void SysTick_Handler(void)	//滴答定时器1MS
 		else 
 			LowP_Time = 0;
 	}	
+	if((State.CH_LDuty_S) && (CH_LowDuty_Time < CHLDUTYTIME))
+		CH_LowDuty_Time++;
+	
 	if((State.SUN_LDuty_S) && (SUN_LowDuty_Time < SUNLDUTYTIME))
 		SUN_LowDuty_Time++;
 	

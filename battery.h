@@ -142,6 +142,7 @@ typedef struct _state
 	u8	SW_DET_Op_S		:1;			//操作标志
 
 	u8	SUN_LDuty_S		:1;			//低占空比计时标注		
+	u8	CH_LDuty_S			:1;			//低占空比计时标注		
 	u8	CH_NV_S			:1;			
 	u8	SUN_NV_S			:1;			
 
