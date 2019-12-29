@@ -6,11 +6,11 @@ uint16_t DYQInitData[LENGTH_DATA];
 uint16_t ReadBuf[LENGTH_DATA];                   //读出的数据
 
 u8 Vol_Count[7]={0};
-u8 SOC_Count[9]={0};
+u8 SOC_Count[15]={0};
 u8 DYQ_Count[7]={0};
 u8 V12_Count[4]={0};
 u8 USB_Count[4]={0};
-u8 AC_OUT_Count[6]={0};
+u8 AC_OUT_Count[7]={0};
 u8 CH_Count[4]={0};
 u8 SUN_Count[4]={0};
 u8 CheckInput_Count[3]={0};
@@ -110,13 +110,14 @@ void Printfstatus(void)
 		printf(" AD%d=%d ",i,AD_Data[i]);
 	printf("\r\n DYQ =%d",ReadBuf[DYQ_InitI]);
 	printf("\r\n");
-	for(u8 j=0;j<10;j++)
+	for(u8 j=0;j<12;j++)
 		printf(" RX%d=%d ",j,RX_BUF[j]);
 	printf("\r\n *T3=%d",ACOVTime[0]);
 	printf(" *T15=%d",ACOVTime[1]);
 	printf(" *OT=%d",Open_Time);
 	printf(" *LT=%d",LowP_Time);
-	printf(" *DC=%d",Charge_Dutycycle);
+	printf(" *CD=%d",Charge_Dutycycle);
+	printf(" *CAP=%d",Capacity);
 }
 
 void Clear_CH_ERR(void)
@@ -179,6 +180,21 @@ void Clear_ACOUT_ERR(void)
 		DisplayBit.Data_OErr.BitOErr.ACO_Err = 0;
 	}
 }
+
+void Clear_LowP(u8 lpow)
+{
+	if(lpow)	//清低4位
+	{
+		BuzzerBit.Data_LowP.Byte_LowP &= 0xf0;
+		DisplayBit.Data_LowP.Byte_LowP &= 0xf0;
+	}
+	else
+	{
+		BuzzerBit.Data_LowP.Byte_LowP = 0;
+		DisplayBit.Data_LowP.Byte_LowP = 0;
+	}
+}
+
 
 void SET_DYQ_ERR(void)
 {
@@ -303,8 +319,7 @@ void Capacity_InVol(void)
 			State.CH_Full_S = 0;
 			if(!State.DCH_P_S)//未DC带载到电量低
 			{
-				BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-				DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+				Clear_LowP(LOWP5);
 				Capacity=Capacity_5;
 			}
 		}
@@ -318,8 +333,7 @@ void Capacity_InVol(void)
 			State.CH_Full_S = 0;
 			if(!State.DCH_P_S)//未DC带载到电量低
 			{
-				BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-				DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+				Clear_LowP(LOWP5);
 				Capacity=Capacity_20;
 			}
 		}
@@ -333,8 +347,7 @@ void Capacity_InVol(void)
 			State.CH_Full_S = 0;
 			if((!State.DCH_P_S) && (!State.AC_P_S))	//未DC带载到电量低
 			{
-				BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-				DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+				Clear_LowP(LOWP_ALL);
 				Capacity=Capacity_40;
 			}
 		}
@@ -348,8 +361,7 @@ void Capacity_InVol(void)
 			State.CH_Full_S = 0;
 			if((!State.DCH_P_S) && (!State.AC_P_S))
 			{
-				BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-				DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+				Clear_LowP(LOWP_ALL);
 				Capacity=Capacity_60;
 			}
 		}
@@ -361,8 +373,7 @@ void Capacity_InVol(void)
 		{
 			Vol_Count[5] = 0;
 			State.CH_Full_S = 0;
-			BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-			DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+			Clear_LowP(LOWP_ALL);
 			if(!State.AC_P_S)
 				Capacity=Capacity_80;
 		}
@@ -373,8 +384,7 @@ void Capacity_InVol(void)
 		if(Vol_Count[6] > Vol_BaseTimes)
 		{
 			Vol_Count[6] = 0;
-			BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-			DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+			Clear_LowP(LOWP_ALL);
 			Capacity=Capacity_100;
 		}
 	}
@@ -412,10 +422,9 @@ void Capacity_Init(void)
 				if(SOC_Count[1] > SOC_BaseTimes)
 				{
 					SOC_Count[1] = 0;
+					Clear_LowP(LOWP5);
 					Capacity=Capacity_5;
 					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
 				}
 			}
 			else if(RX_BUF[SOCbuf] <= (SOC_40-SOC_Rang)) 
@@ -424,10 +433,9 @@ void Capacity_Init(void)
 				if(SOC_Count[2] > SOC_BaseTimes)
 				{
 					SOC_Count[2] = 0;
+					Clear_LowP(LOWP5);
 					Capacity=Capacity_20;
 					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
 				}
 			}
 			else if(RX_BUF[SOCbuf] <= (SOC_60-SOC_Rang)) 
@@ -436,10 +444,9 @@ void Capacity_Init(void)
 				if(SOC_Count[3] > SOC_BaseTimes)
 				{
 					SOC_Count[3] = 0;
+					Clear_LowP(LOWP_ALL);
 					Capacity=Capacity_40;
 					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
 				}
 			}
 			else if(RX_BUF[SOCbuf] <= (SOC_80-SOC_Rang)) 
@@ -448,10 +455,9 @@ void Capacity_Init(void)
 				if(SOC_Count[4] > SOC_BaseTimes)
 				{
 					SOC_Count[4] = 0;
+					Clear_LowP(LOWP_ALL);
 					Capacity=Capacity_60;
 					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
 				}
 			}
 			else if(RX_BUF[SOCbuf] <= SOC_90) 
@@ -460,10 +466,9 @@ void Capacity_Init(void)
 				if(SOC_Count[5] > SOC_BaseTimes)
 				{
 					SOC_Count[5] = 0;
+					Clear_LowP(LOWP_ALL);
 					Capacity=Capacity_80;
 					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
 				}
 			}
 			else 
@@ -472,9 +477,8 @@ void Capacity_Init(void)
 				if(SOC_Count[6] > SOC_BaseTimes)
 				{
 					SOC_Count[6] = 0;
+					Clear_LowP(LOWP_ALL);
 					Capacity=Capacity_100;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
 				}
 			}
 		}
@@ -487,10 +491,10 @@ void Check_Capacity_Sta(void)
 	u16 max,min;
 	if(AD_Data[AD_V_Bat] >= (Voltage_100+50)) 
 	{
-		K_memset(8, SOC_Count,sizeof(SOC_Count));
-		if(SOC_Count[8] > (2*SOC_BaseTimes))
+		K_memset(13, SOC_Count,sizeof(SOC_Count));
+		if(SOC_Count[13] > (2*SOC_BaseTimes))
 		{
-			SOC_Count[8] = 0;
+			SOC_Count[13] = 0;
 			State.CH_Full_S = 1;
 		}
 	}
@@ -498,11 +502,11 @@ void Check_Capacity_Sta(void)
 	*测试模式，使用电压判断电量*/
 	if((DisplayBit.Data_Bat.BitBat.B3Sc_Err) || (State.Test_Mod_S))	
 	{
-		K_memset(7, SOC_Count,sizeof(SOC_Count));
-		if(SOC_Count[7] > (2*SOC_BaseTimes))
+		K_memset(14, SOC_Count,sizeof(SOC_Count));
+		if(SOC_Count[14] > (5*SOC_BaseTimes))
 		{
-			SOC_Count[7] = 0;
-			Capacity_InVol();
+			SOC_Count[14] = 0;
+//			Capacity_InVol();
 		}
 	}
 	else	//使用采集板SOC判断电量
@@ -510,9 +514,9 @@ void Check_Capacity_Sta(void)
 		if(State.B3S_Finish_S)
 		{
 			State.B3S_Finish_S = 0;
-			if((RX_BUF[SOCbuf] < 0) || (RX_BUF[SOCbuf] > 1001))
+			if((RX_BUF[SOCbuf] <= 0) || (RX_BUF[SOCbuf] > 1001))
 				return;
-			if(RX_BUF[SOCbuf] <= SOC_95)
+			if(RX_BUF[SOCbuf] < SOC_95)
 				State.CH_Full_S = 0;
 			if(RX_BUF[SOCbuf] <= SOC_0)
 			{
@@ -521,7 +525,6 @@ void Check_Capacity_Sta(void)
 				{
 					SOC_Count[0] = 0;
 					Capacity=Capacity_0;
-					State.CH_Full_S = 0;
 					if((!DisplayBit.Data_LowP.BitLowP.BAT_LowP)&&(Charge_State == CH_None))
 					{
 						BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 1;
@@ -529,80 +532,154 @@ void Check_Capacity_Sta(void)
 					}
 				}
 			}
-			else if((RX_BUF[SOCbuf] < (SOC_5+SOC_Rang)) 
-				&&(RX_BUF[SOCbuf] > (SOC_5-SOC_Rang)))
+			else if((RX_BUF[SOCbuf] < (SOC_5-SOC_Rang))
+				&&(RX_BUF[SOCbuf] > SOC_0))
 			{
 				K_memset(1, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[1] > SOC_BaseTimes)
 				{
 					SOC_Count[1] = 0;
-					Capacity=Capacity_5;
-					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+					if(Capacity>Capacity_5)
+					{
+						Clear_LowP(LOWP5);
+						Capacity=Capacity_5;
+					}
 				}
 			}
-			else if((RX_BUF[SOCbuf] < (SOC_20+SOC_Rang)) 
-				&&(RX_BUF[SOCbuf] > (SOC_20-SOC_Rang)))
+			else if((RX_BUF[SOCbuf] <= (SOC_5+SOC_Rang))
+				&&(RX_BUF[SOCbuf] >= (SOC_5-SOC_Rang)))
 			{
 				K_memset(2, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[2] > SOC_BaseTimes)
 				{
 					SOC_Count[2] = 0;
-					Capacity=Capacity_20;
-					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+					Clear_LowP(LOWP5);
+					Capacity=Capacity_5;
 				}
 			}
-			else if((RX_BUF[SOCbuf] < (SOC_40+SOC_Rang)) 
-				&&(RX_BUF[SOCbuf] > (SOC_40-SOC_Rang)))
+			else if((RX_BUF[SOCbuf] < (SOC_20-SOC_Rang))
+				&&(RX_BUF[SOCbuf] > (SOC_5+SOC_Rang)))
 			{
 				K_memset(3, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[3] > SOC_BaseTimes)
 				{
 					SOC_Count[3] = 0;
-					Capacity=Capacity_40;
-					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+					Clear_LowP(LOWP5);
+					if(Capacity<Capacity_5)
+						Capacity=Capacity_5;
+					else if(Capacity>Capacity_20)
+						Capacity=Capacity_20;
 				}
 			}
-			else if((RX_BUF[SOCbuf] < (SOC_60+SOC_Rang)) 
-				&&(RX_BUF[SOCbuf] > (SOC_60-SOC_Rang)))
+			else if((RX_BUF[SOCbuf] <= (SOC_20+SOC_Rang))
+				&&(RX_BUF[SOCbuf] >= (SOC_20-SOC_Rang)))
 			{
 				K_memset(4, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[4] > SOC_BaseTimes)
 				{
 					SOC_Count[4] = 0;
-					Capacity=Capacity_60;
-					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+					Clear_LowP(LOWP5);
+					Capacity=Capacity_20;
 				}
 			}
-			else if((RX_BUF[SOCbuf] < (SOC_80+SOC_Rang)) 
-				&&(RX_BUF[SOCbuf] > (SOC_80-SOC_Rang)))
+			else if((RX_BUF[SOCbuf] < (SOC_40-SOC_Rang))
+				&&(RX_BUF[SOCbuf] > (SOC_20+SOC_Rang)))
 			{
 				K_memset(5, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[5] > SOC_BaseTimes)
 				{
 					SOC_Count[5] = 0;
-					Capacity=Capacity_80;
-					State.CH_Full_S = 0;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
+					Clear_LowP(LOWP5);
+					if(Capacity<Capacity_20)
+						Capacity=Capacity_20;
+					else if(Capacity>Capacity_40)
+					{
+						Clear_LowP(LOWP_ALL);
+						Capacity=Capacity_40;
+					}
 				}
 			}
-			else if(RX_BUF[SOCbuf] >= SOC_95)
+			else if((RX_BUF[SOCbuf] <= (SOC_40+SOC_Rang))
+				&&(RX_BUF[SOCbuf] >= (SOC_40-SOC_Rang)))
 			{
 				K_memset(6, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[6] > SOC_BaseTimes)
 				{
 					SOC_Count[6] = 0;
+					Clear_LowP(LOWP_ALL);
+					Capacity=Capacity_40;
+				}
+			}
+			else if((RX_BUF[SOCbuf] < (SOC_60-SOC_Rang))
+				&&(RX_BUF[SOCbuf] > (SOC_40+SOC_Rang)))
+			{
+				K_memset(7, SOC_Count,sizeof(SOC_Count));
+				if(SOC_Count[7] > SOC_BaseTimes)
+				{
+					SOC_Count[7] = 0;
+					Clear_LowP(LOWP_ALL);
+					if(Capacity<Capacity_40)
+						Capacity=Capacity_40;
+					else if(Capacity>Capacity_60)
+						Capacity=Capacity_60;
+				}
+			}
+			else if((RX_BUF[SOCbuf] <= (SOC_60+SOC_Rang))
+				&&(RX_BUF[SOCbuf] >= (SOC_60-SOC_Rang)))
+			{
+				K_memset(8, SOC_Count,sizeof(SOC_Count));
+				if(SOC_Count[8] > SOC_BaseTimes)
+				{
+					SOC_Count[8] = 0;
+					Clear_LowP(LOWP_ALL);
+					Capacity=Capacity_60;
+				}
+			}
+			else if((RX_BUF[SOCbuf] < (SOC_80-SOC_Rang))
+				&&(RX_BUF[SOCbuf] > (SOC_60+SOC_Rang)))
+			{
+				K_memset(9, SOC_Count,sizeof(SOC_Count));
+				if(SOC_Count[9] > SOC_BaseTimes)
+				{
+					SOC_Count[9] = 0;
+					Clear_LowP(LOWP_ALL);
+					if(Capacity<Capacity_60)
+						Capacity=Capacity_60;
+					else if(Capacity>Capacity_80)
+						Capacity=Capacity_80;
+				}
+			}
+			else if((RX_BUF[SOCbuf] <= (SOC_80+SOC_Rang))
+				&&(RX_BUF[SOCbuf] >= (SOC_80-SOC_Rang)))
+			{
+				K_memset(10, SOC_Count,sizeof(SOC_Count));
+				if(SOC_Count[10] > SOC_BaseTimes)
+				{
+					SOC_Count[10] = 0;
+					Clear_LowP(LOWP_ALL);
+					Capacity=Capacity_80;
+				}
+			}
+			else if((RX_BUF[SOCbuf] < SOC_95)
+				&&(RX_BUF[SOCbuf] > (SOC_80+SOC_Rang)))
+			{
+				K_memset(11, SOC_Count,sizeof(SOC_Count));
+				if(SOC_Count[11] > SOC_BaseTimes)
+				{
+					SOC_Count[11] = 0;
+					Clear_LowP(LOWP_ALL);
+					if(Capacity<Capacity_80)
+						Capacity=Capacity_80;
+				}
+			}
+			else if(RX_BUF[SOCbuf] >= SOC_95)
+			{
+				K_memset(12, SOC_Count,sizeof(SOC_Count));
+				if(SOC_Count[12] > SOC_BaseTimes)
+				{
+					SOC_Count[12] = 0;
+					Clear_LowP(LOWP_ALL);
 					Capacity=Capacity_100;
-					BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 0;
-					DisplayBit.Data_LowP.BitLowP.BAT_LowP = 0;
 					if((RX_BUF[B3sState]==SAVE_FULL) && (RX_BUF[SOCbuf] >= SOC_100))
 					{
 						max=(RX_BUF[Cell_V1]>RX_BUF[Cell_V2]) ? RX_BUF[Cell_V1] : RX_BUF[Cell_V2];
@@ -648,12 +725,14 @@ u8 Init_DYQ_OpV(void)
 void Init_DYQ(void)
 {
 	if((Open_Time > (DYQInitData[DYQ_OffTime] + 500)) 
-//	&& (Open_Time <  3500)
+	&& (Open_Time <  3500)
 	&& (0xAA55 != flag_data))
 	{
 		ADC_Filter();
 		DYQInitData[DYQ_OffVolt] = (u16)AD_Data[AD_V_DYQ];
-		if(DYQInitData[DYQ_OffVolt] > 11500)	//依然大于11.5V认为点烟口无接负载
+		if((DYQInitData[DYQ_OffVolt] > 11500)	//依然大于11.5V认为点烟口无接负载
+		&& (DYQInitData[DYQ_InitI] > 0)
+		&& (DYQInitData[DYQ_InitI] < 500))
 		{
 			DYQInitData[DYQ_CollecTime] = (u16)Open_Time;
 			flag_data = 0xAA55;		//将标志位置为"已写入"
@@ -854,14 +933,24 @@ void Check_AC_OUT_Sta(void)
 				SET_ACOUT_ERR();
 			}
 		}
+		else if(RX_BUF[ACVol]  < 900)
+		{
+			K_memset(1, AC_OUT_Count,sizeof(AC_OUT_Count));
+			if(AC_OUT_Count[1] > (10*AC_OUT_BaseTimes))
+			{
+				AC_OUT_Count[1] =0 ;
+				AC_OUT_Op(0);
+				SET_ACOUT_ERR();
+			}
+		}
 		else
 		{
 			if(RX_BUF[Powbuf] > MaxPow)		// AC_OUT 输出超功率
 			{
-				K_memset(1, AC_OUT_Count,sizeof(AC_OUT_Count));
-				if(AC_OUT_Count[1] > (AC_OUT_BaseTimes))
+				K_memset(2, AC_OUT_Count,sizeof(AC_OUT_Count));
+				if(AC_OUT_Count[2] > (AC_OUT_BaseTimes))
 				{
-					AC_OUT_Count[1] =0 ;
+					AC_OUT_Count[2] =0 ;
 					AC_OUT_Op(0);
 					SET_ACOUT_ERR();
 				}
@@ -869,10 +958,10 @@ void Check_AC_OUT_Sta(void)
 #ifdef Power300W			
 			else if(RX_BUF[Powbuf] > (MaxPow-100))		// 3min内关闭
 			{
-				K_memset(2, AC_OUT_Count,sizeof(AC_OUT_Count));
-				if(AC_OUT_Count[2] > (AC_OUT_BaseTimes))
+				K_memset(3, AC_OUT_Count,sizeof(AC_OUT_Count));
+				if(AC_OUT_Count[3] > (AC_OUT_BaseTimes))
 				{
-					AC_OUT_Count[2] =0 ;
+					AC_OUT_Count[3] =0 ;
 					AC_OUT_State = Out_Normal;
 					State.AC_OV3min_S =1;
 					Clear_ACOUT_ERR();
@@ -885,10 +974,10 @@ void Check_AC_OUT_Sta(void)
 			}
 			else if(RX_BUF[Powbuf] > (MaxPow-200))		// 15min内关闭
 			{
-				K_memset(3, AC_OUT_Count,sizeof(AC_OUT_Count));
-				if(AC_OUT_Count[3] > (AC_OUT_BaseTimes))
+				K_memset(4, AC_OUT_Count,sizeof(AC_OUT_Count));
+				if(AC_OUT_Count[4] > (AC_OUT_BaseTimes))
 				{
-					AC_OUT_Count[3] =0 ;
+					AC_OUT_Count[4] =0 ;
 					AC_OUT_State = Out_Normal;
 					State.AC_OV3min_S =0;
 					State.AC_OV15min_S =1;
@@ -904,10 +993,10 @@ void Check_AC_OUT_Sta(void)
 #endif			
 			else if(RX_BUF[Powbuf] > 10)		// AC_OUT 有输出
 			{
-				K_memset(4, AC_OUT_Count,sizeof(AC_OUT_Count));
-				if(AC_OUT_Count[4] > (AC_OUT_BaseTimes))
+				K_memset(5, AC_OUT_Count,sizeof(AC_OUT_Count));
+				if(AC_OUT_Count[5] > (AC_OUT_BaseTimes))
 				{
-					AC_OUT_Count[4] =0 ;
+					AC_OUT_Count[5] =0 ;
 					AC_OUT_State = Out_Normal;
 					State.AC_OV3min_S =0;
 					State.AC_OV15min_S =0;
@@ -918,10 +1007,10 @@ void Check_AC_OUT_Sta(void)
 			}
 			else		// AC_OUT 没有输出
 			{
-				K_memset(5, AC_OUT_Count,sizeof(AC_OUT_Count));
-				if(AC_OUT_Count[5] > (AC_OUT_BaseTimes))
+				K_memset(6, AC_OUT_Count,sizeof(AC_OUT_Count));
+				if(AC_OUT_Count[6] > (AC_OUT_BaseTimes))
 				{
-					AC_OUT_Count[5] =0 ;
+					AC_OUT_Count[6] =0 ;
 					AC_OUT_State = Out_None;
 					State.AC_OV3min_S =0;
 					State.AC_OV15min_S =0;
@@ -1375,7 +1464,7 @@ void Operate_DYQ(void)
 		{
 			if(DYQ_OUT_State)
 			{
-				State.DCH_P_S =1 ;
+//				State.DCH_P_S =1 ;
 				if(!DisplayBit.Data_LowP.BitLowP.DYQ_LowP)
 				{
 					BuzzerBit.Data_LowP.BitLowP.DYQ_LowP = 1;
@@ -1417,7 +1506,7 @@ void Operate_12V(void)
 	{
 		if(V12_OUT_State)
 		{
-			State.DCH_P_S =1 ;
+//			State.DCH_P_S =1 ;
 			if(!DisplayBit.Data_LowP.BitLowP.V12_LowP)
 			{
 				BuzzerBit.Data_LowP.BitLowP.V12_LowP = 1;
@@ -1463,7 +1552,7 @@ void Operate_USB(void)
 	{
 		if(USB_OUT_State)
 		{
-			State.DCH_P_S =1 ;
+//			State.DCH_P_S =1 ;
 			if(!DisplayBit.Data_LowP.BitLowP.USB_LowP)
 			{
 				BuzzerBit.Data_LowP.BitLowP.USB_LowP = 1;
@@ -1514,8 +1603,8 @@ void Operate_AC_OUT(void)
 				BuzzerBit.Data_LowP.BitLowP.ACO_LowP = 1;//开启报警,报警后关闭
 				DisplayBit.Data_LowP.BitLowP.ACO_LowP = 1;//开启报警,报警后关闭
 			}
-			if(State.AC_OUT_S) 
-				State.AC_P_S = 1;	//标志ac放电到电量低保护
+//			if(State.AC_OUT_S) 
+//				State.AC_P_S = 1;	//标志ac放电到电量低保护
 		}
 		else
 		{

@@ -4,11 +4,11 @@
 #include "include.h"
 
 extern u8 Vol_Count[7];
-extern u8 SOC_Count[9];
+extern u8 SOC_Count[15];
 
 extern u8 Restart_Num[];
 extern u8 Buzzer_Count;				//蜂鸣器计数器
-#define SOC_BaseTimes		2
+#define SOC_BaseTimes		4
 #define Vol_BaseTimes		10
 #define V12_BaseTimes		3
 #define DYQ_BaseTimes		3
@@ -52,15 +52,17 @@ extern uint16_t ReadBuf[LENGTH_DATA];                   //读出的数据
 #define   DYQ_OffVolt			0x03
 #define   DYQ_InitI			0x04
 
+#define   LOWP5			1
+#define   LOWP_ALL		0
 
 /******电量电压定义******/
-#define   Voltage_0  			9800
-#define   Voltage_5  			10000
-#define   Voltage_20  			10500
-#define   Voltage_40  			11000
-#define   Voltage_60		  	11400  //3
-#define   Voltage_80		  	11900 
-#define   Voltage_90		 	12400
+#define   Voltage_0  			8700
+#define   Voltage_5  			8800
+#define   Voltage_20  			10000
+#define   Voltage_40  			10800
+#define   Voltage_60		  	11200  //3
+#define   Voltage_80		  	11600
+#define   Voltage_90		 	12200
 #define   Voltage_100		 	12600
 #define   DYQ_utmost	 		12800  
 
@@ -152,6 +154,7 @@ typedef struct _state
 	u8	Charge_P_S			:1;			//充电保护，禁止充电
 	u8	B3S_Finish_S 		:1;			
 	u8	DCS_Finish_S 		:1;			
+	u8	Capy_Calculate 		:1;
 	u8	Print_S				:1;			
 	u8	Test_Mod_S			:1;			
 	u8	DCH_P_S			:1;			

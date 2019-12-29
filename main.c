@@ -44,6 +44,7 @@ void IAP_Set()
 
 void StartInitialization(void)
 {
+	uint16_t ReadBuf_nocheck[LENGTH_DATA];                   //读出的数据
 	Capacity=Capacity_100;
 	Vk1024B_DisAll(0);
 	while(GET_SW_DET==1)	//15ms
@@ -74,8 +75,8 @@ void StartInitialization(void)
 		{
 			while(Init_DYQ_OpV()) 	//等点烟器开启
 			{
-//				if(Open_Time >= 3500)
-//					break;
+				if(Open_Time >= 3500)
+					break;
 			}
 		}
 		while(Open_Time < 4000)
@@ -114,7 +115,10 @@ void StartInitialization(void)
 	}
 	memset(SOC_Count,0,sizeof(SOC_Count));
 	memset(Vol_Count,0,sizeof(Vol_Count));
-	FLASH_ReadNWord(ReadBuf, FLASH_ADDR_DATA, LENGTH_DATA);
+	FLASH_ReadNWord(ReadBuf_nocheck, FLASH_ADDR_DATA, LENGTH_DATA);
+	if((ReadBuf_nocheck[DYQ_InitI] > 0)
+	&& (ReadBuf_nocheck[DYQ_InitI] < 500))
+		memcpy(ReadBuf,ReadBuf_nocheck,sizeof(ReadBuf));
 }
 
 main()

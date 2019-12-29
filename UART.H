@@ -9,7 +9,7 @@
 #define   R_B3S_S		"B3S_" 
 #define   R_COM_S		"KCOM_" 
 
-#define   T_B3S_S		"B3S?_3V191224\r\n" 
+#define   T_B3S_S		"B3S?_3V191229\r\n" 
 #define   T_ACS_S		"ACS?\r\n" 
 #define   T_DCON_S		"DCON\r\n" 
 #define   T_DCOFF_S		"DCOFF\r\n" 
@@ -37,8 +37,11 @@
 #define Cell_V1	6
 #define Cell_V2	7
 #define Cell_V3	8
-#define V_Diff	9
-#define Counter	10
+#define NowCapy	9
+#define TrueCapy	10
+#define ACVol	11
+#define V_Diff	12
+#define Counter	13
 
 
 /******采集板状态定义******/
@@ -68,7 +71,7 @@ extern p_Inquire pInquire;
 
 extern u16 UART_RX_STA;
 extern char UART_RX_BUF[UART_REC_LEN];
-extern int32 RX_BUF[11];
+extern int32 RX_BUF[14];
 
 
 void Uart_Init(uint32_t bound);

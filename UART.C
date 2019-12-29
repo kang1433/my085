@@ -8,7 +8,7 @@
 
 u16 UART_RX_STA=0;
 char UART_RX_BUF[UART_REC_LEN];
-int32 RX_BUF[11] = {0};
+int32 RX_BUF[14] = {0};
 p_Inquire pInquire;
 
 void Uart_Init(uint32_t baud)
@@ -166,6 +166,35 @@ int32_t str_int_n( const char *str, uint8_t n )
 	 return temp;
 }
 
+int32_t str_int_M( const char *str, uint8_t n )
+{
+	 int32_t temp = 0;
+	 const char *ptr;//ptr保存str字符串开头
+	 while(*str != 0)
+	 {
+		if (*str =='M' && n ) //  第n组_
+		{ 
+			n--; 
+			if( n==0 ) 
+				str++; 
+		}
+		if( n== 0 )
+		{	
+			if(*str == '-' || *str == '+' ) //如果第一个字符是正负号，
+			{ 
+				ptr = str;
+				str++;  //则移到下一个字符
+			}
+			if ((*str < '0') || (*str > '9')) //如果当前字符不是数字
+				break;                    //则退出循环
+			temp = temp*10 + (*str - '0');    //如果当前字符是数字则计算数值
+		}
+		str++;      //移到下一个字符
+	 }
+	 if (*ptr == '-')       //如果字符串是以“-”开头，则转换成其相反数
+	 { temp = -temp;  }
+	 return temp;
+}
 
 void Inquire(void)
 {
@@ -175,7 +204,15 @@ void Inquire(void)
 		if(RX_BUF[Counter] > 1)
 		{
 			RX_BUF[Counter] = 0;
-			printf(T_B3S_S);	//发送字符查询B3S
+			if(State.Capy_Calculate)
+			{
+				State.Capy_Calculate = 0;
+				printf("BMI=_1_%d_%d",RX_BUF[TrueCapy],RX_BUF[TrueCapy]);
+			}
+			else
+			{
+				printf(T_B3S_S);	//发送字符查询B3S
+			}
 		}
 		pInquire = Iq_ACS;
 	}
@@ -213,10 +250,12 @@ void ACSDCSB3S_State(void)
 		{
 			RX_BUF[B3sState] = str_int_n(ptemp,2);
 			RX_BUF[Volbuf] = str_int_n(ptemp,3);
+			RX_BUF[NowCapy] = str_int_n(ptemp,10);
 			RX_BUF[SOCbuf] = str_int_n(ptemp,11);
 			RX_BUF[Cell_V1] = str_int_n(ptemp,4);
 			RX_BUF[Cell_V2] = str_int_n(ptemp,5);
 			RX_BUF[Cell_V3] = str_int_n(ptemp,6);
+			RX_BUF[TrueCapy] = str_int_M(ptemp,1);
 			
 			B3S_RX_Time = B3S_OVTime;
 			BuzzerBit.Data_Bat.BitBat.B3Sc_Err = 0;
@@ -243,6 +282,11 @@ void ACSDCSB3S_State(void)
 			if(RX_BUF[B3sState]==SAVE_BT_HV)
 				State.CH_Full_S = 1;
 			
+			if((RX_BUF[B3sState] == 1)
+			&& (RX_BUF[NowCapy] > (RX_BUF[TrueCapy] + 1000))
+			&& (RX_BUF[TrueCapy] > 50000)
+			&& (RX_BUF[TrueCapy] < 65000))
+				State.Capy_Calculate = 1;
 			State.B3S_Finish_S = 1;
 		}
 		if(ptemp1 = strstr(UART_RX_BUF,R_DCS_S))
@@ -252,11 +296,13 @@ void ACSDCSB3S_State(void)
 			{
 				RX_BUF[AcsState] = str_int_n(ptemp2,2);
 				RX_BUF[Powbuf] = str_int_n(ptemp2,3);
+				RX_BUF[ACVol] = str_int_n(ptemp2,4);
 			}
 			else
 			{
 				RX_BUF[AcsState] = 0;
 				RX_BUF[Powbuf] =0;
+				RX_BUF[ACVol] = 0;
 			}
 			BuzzerBit.Data_Bat.BitBat.ACS_Err = 0;
 			DisplayBit.Data_Bat.BitBat.ACS_Err = 0;
