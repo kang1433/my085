@@ -44,7 +44,7 @@ void IAP_Set()
 
 void StartInitialization(void)
 {
-	uint16_t ReadBuf_nocheck[LENGTH_DATA];                   //读出的数据
+	int16 ReadBuf_nocheck[LENGTH_DATA];                   //读出的数据
 	Capacity=Capacity_100;
 	Vk1024B_DisAll(0);
 	while(GET_SW_DET==1)	//15ms
@@ -57,7 +57,7 @@ void StartInitialization(void)
 			printf("B3S?\r\n");
 		}
 		ACSDCSB3S_State();
-		Capacity_Init();
+		Check_Capacity_Sta();	//Capacity_Init();
 		if(((Open_Time%300) < 215) && ((Open_Time%300) > 200))
 			printf("DCOFF\r\n");			
 		if(Open_Time > 2000)
@@ -84,7 +84,7 @@ void StartInitialization(void)
 			Init_DYQ();
 			ADC_Filter();
 			Vk1024B_DisAll(1);
-			Capacity_Init();
+			Check_Capacity_Sta();	//Capacity_Init();
 			Feed_Dog();
 		}
 	}
@@ -102,7 +102,7 @@ void StartInitialization(void)
 				Feed_Dog();
 			}
 			ACSDCSB3S_State();
-			Capacity_Init();
+			Check_Capacity_Sta();	//Capacity_Init();
 			if(((Open_Time%300) < 215) && ((Open_Time%300) > 200))
 				printf("DCOFF\r\n");			
 			if(Access_SUN || Access_CH)
@@ -115,8 +115,8 @@ void StartInitialization(void)
 	}
 	memset(SOC_Count,0,sizeof(SOC_Count));
 	memset(Vol_Count,0,sizeof(Vol_Count));
-	FLASH_ReadNWord(ReadBuf_nocheck, FLASH_ADDR_DATA, LENGTH_DATA);
-	if((ReadBuf_nocheck[DYQ_InitI] > 0)
+	FLASH_ReadNWord((uint16_t*)ReadBuf_nocheck, FLASH_ADDR_DATA, LENGTH_DATA);
+	if((ReadBuf_nocheck[DYQ_InitI] >= 0)
 	&& (ReadBuf_nocheck[DYQ_InitI] < 500))
 		memcpy(ReadBuf,ReadBuf_nocheck,sizeof(ReadBuf));
 }

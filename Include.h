@@ -40,8 +40,8 @@
 /*********充电电压阀值定义*********/
 #define   Diode_V				450					//单位mV
 #define   N_V_Charger		(9000- Diode_V)		//单位mV
-#define   C_V_Charger_Normal	(12600-Diode_V)
-#define   P_V_Charger_Normal	(13100-Diode_V)		
+#define   C_V_Charger_Normal	(12350-Diode_V)
+#define   P_V_Charger_Normal	(13200-Diode_V)		
 #define   C_V_Charger_Test	(10500-Diode_V)
 #define   P_V_Charger_Test	(14100-Diode_V)		
 
@@ -52,18 +52,18 @@
 #define   Zero_I_L			150		//ma
 #define   Zero_I_H			250		//ma
 
-#define   SUN_I_Less			2500	
-#define   SUN_I_Little			4000	
+#define   SUN_I_Less			3000	
+#define   SUN_I_Little			4500	
 #define   SUN_I_Nor 			5100	
 #define   SUN_I_Pro			5700
 
 #ifdef Power300W			
-#define   CH_I_Less			2500	
-#define   CH_I_Little			4000	
+#define   CH_I_Less			3000	
+#define   CH_I_Little			4500	
 #define   CH_I_Nor 			5100	
 #define   CH_I_Pro			5700
 #else
-#define   CH_I_Less			5000	
+#define   CH_I_Less			6000	
 #define   CH_I_Little			9000	
 #define   CH_I_Nor 			10100	
 #define   CH_I_Pro			10500
@@ -73,7 +73,7 @@
 /*********DC电流阀值定义*********/
 #define   B_I_12V		 		30		//ma
 #define   C_I_12V		 		100		
-#define   P_I_12V		 		2800		
+#define   P_I_12V		 		2750		
 
 #define   B_I_DYQ		 	30		//ma
 #define   C_I_DYQ		 	(200 + ReadBuf[DYQ_InitI])		

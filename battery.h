@@ -8,7 +8,7 @@ extern u8 SOC_Count[15];
 
 extern u8 Restart_Num[];
 extern u8 Buzzer_Count;				//蜂鸣器计数器
-#define SOC_BaseTimes		4
+#define SOC_BaseTimes		2
 #define Vol_BaseTimes		10
 #define V12_BaseTimes		3
 #define DYQ_BaseTimes		3
@@ -27,8 +27,8 @@ extern u8 Buzzer_Count;				//蜂鸣器计数器
 #define LENGTH_DATA		5              //数据长度
 
 extern uint16_t flag_data;                            //数据写入标志位
-extern uint16_t DYQInitData[LENGTH_DATA];
-extern uint16_t ReadBuf[LENGTH_DATA];                   //读出的数据
+extern int16 DYQInitData[LENGTH_DATA];
+extern int16 ReadBuf[LENGTH_DATA];                   //读出的数据
 
 /*********温度定义**********/
 #define AC_P_TEMP			85

@@ -2,8 +2,8 @@
 #include "battery.h"
 
 uint16_t flag_data;                            //数据写入标志位
-uint16_t DYQInitData[LENGTH_DATA];
-uint16_t ReadBuf[LENGTH_DATA];                   //读出的数据
+int16 DYQInitData[LENGTH_DATA];
+int16 ReadBuf[LENGTH_DATA];                   //读出的数据
 
 u8 Vol_Count[7]={0};
 u8 SOC_Count[15]={0};
@@ -109,6 +109,7 @@ void Printfstatus(void)
 	for(u8 i=0;i<AD_ChNUM;i++)
 		printf(" AD%d=%d ",i,AD_Data[i]);
 	printf("\r\n DYQ =%d",ReadBuf[DYQ_InitI]);
+	printf("F=0X%F",flag_data);
 	printf("\r\n");
 	for(u8 j=0;j<12;j++)
 		printf(" RX%d=%d ",j,RX_BUF[j]);
@@ -399,9 +400,9 @@ void Capacity_Init(void)
 		if(State.B3S_Finish_S)
 		{
 			State.B3S_Finish_S= 0;
-			if((RX_BUF[SOCbuf] < 0) || (RX_BUF[SOCbuf] > 1001))
+			if((RX_BUF[SOCbuf] <= 0) || (RX_BUF[SOCbuf] > 1001))
 				return;
-			if(RX_BUF[SOCbuf] <= (SOC_5-SOC_Rang)) 
+			if(RX_BUF[SOCbuf] < (SOC_5-SOC_Rang)) 
 			{
 				K_memset(0, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[0] > SOC_BaseTimes)
@@ -416,7 +417,7 @@ void Capacity_Init(void)
 					}
 				}
 			}
-			else if(RX_BUF[SOCbuf] <= (SOC_20-SOC_Rang)) 
+			else if(RX_BUF[SOCbuf] < (SOC_20-SOC_Rang)) 
 			{
 				K_memset(1, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[1] > SOC_BaseTimes)
@@ -427,7 +428,7 @@ void Capacity_Init(void)
 					State.CH_Full_S = 0;
 				}
 			}
-			else if(RX_BUF[SOCbuf] <= (SOC_40-SOC_Rang)) 
+			else if(RX_BUF[SOCbuf] < (SOC_40-SOC_Rang)) 
 			{
 				K_memset(2, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[2] > SOC_BaseTimes)
@@ -438,7 +439,7 @@ void Capacity_Init(void)
 					State.CH_Full_S = 0;
 				}
 			}
-			else if(RX_BUF[SOCbuf] <= (SOC_60-SOC_Rang)) 
+			else if(RX_BUF[SOCbuf] < (SOC_60-SOC_Rang)) 
 			{
 				K_memset(3, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[3] > SOC_BaseTimes)
@@ -449,7 +450,7 @@ void Capacity_Init(void)
 					State.CH_Full_S = 0;
 				}
 			}
-			else if(RX_BUF[SOCbuf] <= (SOC_80-SOC_Rang)) 
+			else if(RX_BUF[SOCbuf] < (SOC_80-SOC_Rang)) 
 			{
 				K_memset(4, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[4] > SOC_BaseTimes)
@@ -460,7 +461,7 @@ void Capacity_Init(void)
 					State.CH_Full_S = 0;
 				}
 			}
-			else if(RX_BUF[SOCbuf] <= SOC_90) 
+			else if(RX_BUF[SOCbuf] < SOC_90) 
 			{
 				K_memset(5, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[5] > SOC_BaseTimes)
@@ -502,12 +503,12 @@ void Check_Capacity_Sta(void)
 	*测试模式，使用电压判断电量*/
 	if((DisplayBit.Data_Bat.BitBat.B3Sc_Err) || (State.Test_Mod_S))	
 	{
-		K_memset(14, SOC_Count,sizeof(SOC_Count));
-		if(SOC_Count[14] > (5*SOC_BaseTimes))
-		{
-			SOC_Count[14] = 0;
+//		K_memset(14, SOC_Count,sizeof(SOC_Count));
+//		if(SOC_Count[14] > (5*SOC_BaseTimes))
+//		{
+//			SOC_Count[14] = 0;
 //			Capacity_InVol();
-		}
+//		}
 	}
 	else	//使用采集板SOC判断电量
 	{
@@ -703,13 +704,14 @@ u8 Init_DYQ_OpV(void)
 	{
 		ADC_Filter();
 		Feed_Dog();
-		DYQInitData[DYQ_OnVolt] = (u16)AD_Data[AD_V_DYQ];
+		DYQInitData[DYQ_OnVolt] = (int16)AD_Data[AD_V_DYQ];
 		/*大于12v才认为是有效电压，否则继续等待*/
-		if(DYQInitData[DYQ_OnVolt] > 12000)	
+		if((DYQInitData[DYQ_OnVolt] > 12000)
+		&& (DYQInitData[DYQ_OnVolt] < 13000))
 		{
-			DYQInitData[DYQ_InitI] = (u16)AD_Data[AD_I_DYQ];
+			DYQInitData[DYQ_InitI] = (int16)AD_Data[AD_I_DYQ];
 			DYQ_Op(0);
-			DYQInitData[DYQ_OffTime] = (u16)Open_Time;//记录关点烟器时间
+			DYQInitData[DYQ_OffTime] = (int16)Open_Time;//记录关点烟器时间
 			return 0;
 		}
 		else 
@@ -729,12 +731,13 @@ void Init_DYQ(void)
 	&& (0xAA55 != flag_data))
 	{
 		ADC_Filter();
-		DYQInitData[DYQ_OffVolt] = (u16)AD_Data[AD_V_DYQ];
+		DYQInitData[DYQ_OffVolt] = (int16)AD_Data[AD_V_DYQ];
 		if((DYQInitData[DYQ_OffVolt] > 11500)	//依然大于11.5V认为点烟口无接负载
-		&& (DYQInitData[DYQ_InitI] > 0)
+		&& (DYQInitData[DYQ_OffVolt] < 13000)
+		&& (DYQInitData[DYQ_InitI] >= 0)
 		&& (DYQInitData[DYQ_InitI] < 500))
 		{
-			DYQInitData[DYQ_CollecTime] = (u16)Open_Time;
+			DYQInitData[DYQ_CollecTime] = (int16)Open_Time;
 			flag_data = 0xAA55;		//将标志位置为"已写入"
 			FLASH_WriteNWord(&flag_data, FLASH_ADDR_FLAG, 1);
 			FLASH_WriteNWord((uint16_t*)&DYQInitData, FLASH_ADDR_DATA, LENGTH_DATA);
