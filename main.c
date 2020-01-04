@@ -113,8 +113,8 @@ void StartInitialization(void)
 			ADC_Filter();
 		}
 	}
-	memset(SOC_Count,0,sizeof(SOC_Count));
-	memset(Vol_Count,0,sizeof(Vol_Count));
+//	memset(SOC_Count,0,sizeof(SOC_Count));
+//	memset(Vol_Count,0,sizeof(Vol_Count));
 	FLASH_ReadNWord((uint16_t*)ReadBuf_nocheck, FLASH_ADDR_DATA, LENGTH_DATA);
 	if((ReadBuf_nocheck[DYQ_InitI] >= 0)
 	&& (ReadBuf_nocheck[DYQ_InitI] < 500))

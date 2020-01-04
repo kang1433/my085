@@ -6,7 +6,7 @@
 ***********************************************************************/
 #include "Uart.h"
 
-u16 UART_RX_STA=0;
+__IO u16 UART_RX_STA=0;
 char UART_RX_BUF[UART_REC_LEN];
 int32 RX_BUF[14] = {0};
 p_Inquire pInquire;
@@ -246,7 +246,9 @@ void ACSDCSB3S_State(void)
 	const char *ptemp2;
 	if(UART_RX_STA & 0x8000)
 	{
-		if(ptemp = strstr(UART_RX_BUF,R_B3S_S))
+		ptemp = strstr(UART_RX_BUF,R_B3S_S);
+		ptemp1 = strstr(UART_RX_BUF,R_DCS_S);	
+		if(ptemp != NULL)
 		{
 			RX_BUF[B3sState] = str_int_n(ptemp,2);
 			RX_BUF[Volbuf] = str_int_n(ptemp,3);
@@ -289,10 +291,11 @@ void ACSDCSB3S_State(void)
 				State.Capy_Calculate = 1;
 			State.B3S_Finish_S = 1;
 		}
-		if(ptemp1 = strstr(UART_RX_BUF,R_DCS_S))
+		if(ptemp1 != NULL)
 		{
+			ptemp2 = strstr(UART_RX_BUF,R_ACS_S);
 			RX_BUF[DcsState]= str_int_n(ptemp1,2); 
-			if((ptemp2 = strstr(UART_RX_BUF,R_ACS_S)) && (State.Key_S))
+			if((ptemp2 != NULL) && (State.Key_S))
 			{
 				RX_BUF[AcsState] = str_int_n(ptemp2,2);
 				RX_BUF[Powbuf] = str_int_n(ptemp2,3);

@@ -6,7 +6,7 @@
 extern u8 Vol_Count[7];
 extern u8 SOC_Count[15];
 
-extern u8 Restart_Num[];
+extern u8 Restart_Num[6];
 extern u8 Buzzer_Count;				//蜂鸣器计数器
 #define SOC_BaseTimes		2
 #define Vol_BaseTimes		10
@@ -119,50 +119,50 @@ extern p_Charge_State Access_CH;
 /******************状态标志  *******************/	
 typedef struct _state		
 {
-	u8	CH_Full_S			:1;			//充满电
-	u8	DCH_S				:1;			//放电标志
-	u8	CH_S				:1;			//充电标志
+	__IO u8	CH_Full_S			:1;			//充满电
+	__IO u8	DCH_S				:1;			//放电标志
+	__IO u8	CH_S				:1;			//充电标志
 	
-	u8	CH_Ch_S			:1;			//充电器充电开启
-	u8	SUN_Ch_S			:1;			//太阳能充电开启
-	u8	DYQ_S				:1;			//DYQ开启
-	u8	V12_S 				:1;			//12v 开启
-	u8	AC_OUT_S			:1;			//ACO开启
-	u8	USB_S				:1;			
+	__IO u8	CH_Ch_S			:1;			//充电器充电开启
+	__IO u8	SUN_Ch_S			:1;			//太阳能充电开启
+	__IO u8	DYQ_S				:1;			//DYQ开启
+	__IO u8	V12_S 				:1;			//12v 开启
+	__IO u8	AC_OUT_S			:1;			//ACO开启
+	__IO u8	USB_S				:1;			
 
-	u8	Ch_Restart_S		:1;			//Ch重启
-	u8	SUN_Restart_S		:1;			//SUN重启
-	u8	V12_Restart_S		:1;			//12V重启
-	u8	DYQ_Restart_S		:1;			//DYQ重启
-	u8	USB_Restart_S		:1;			//SUB重启
+	__IO u8	Ch_Restart_S		:1;			//Ch重启
+	__IO u8	SUN_Restart_S		:1;			//SUN重启
+	__IO u8	V12_Restart_S		:1;			//12V重启
+	__IO u8	DYQ_Restart_S		:1;			//DYQ重启
+	__IO u8	USB_Restart_S		:1;			//SUB重启
 
-	u8	Key_S				:1;			//按键标志
-	u8	Key_Press_S 		:1;			//按下计时
-	u8	SW_DET_S			:1;			//开关机状态
-	u8	SW_DET_CH_S		:1;			//充电开关机状态
-	u8	SW_DET_Press_S 	:1;			//按下计时
-	u8	SW_DET_Op_S		:1;			//操作标志
+	__IO u8	Key_S				:1;			//按键标志
+	__IO u8	Key_Press_S 		:1;			//按下计时
+	__IO u8	SW_DET_S			:1;			//开关机状态
+	__IO u8	SW_DET_CH_S		:1;			//充电开关机状态
+	__IO u8	SW_DET_Press_S 	:1;			//按下计时
+	__IO u8	SW_DET_Op_S		:1;			//操作标志
 
-	u8	SUN_LDuty_S		:1;			//低占空比计时标注		
-	u8	CH_LDuty_S			:1;			//低占空比计时标注		
-	u8	CH_NV_S			:1;			
-	u8	SUN_NV_S			:1;			
+	__IO u8	SUN_LDuty_S		:1;			//低占空比计时标注		
+	__IO u8	CH_LDuty_S			:1;			//低占空比计时标注		
+	__IO u8	CH_NV_S			:1;			
+	__IO u8	SUN_NV_S			:1;			
 
-	u8	AC_OV3min_S		:1;			
-	u8	AC_OV15min_S		:1;	
+	__IO u8	AC_OV3min_S		:1;			
+	__IO u8	AC_OV15min_S		:1;	
 	
-	u8	Charge_P_S			:1;			//充电保护，禁止充电
-	u8	B3S_Finish_S 		:1;			
-	u8	DCS_Finish_S 		:1;			
-	u8	Capy_Calculate 		:1;
-	u8	Print_S				:1;			
-	u8	Test_Mod_S			:1;			
-	u8	DCH_P_S			:1;			
-	u8	AC_P_S				:1;			
-	u8	H_Temp_S			:1;			
-	u8	H_TempFAN_S		:1;			
-	u8	H_DYQIFAN_S		:1;			
-	u8	ADC_Finish_S 		:1;			//ADC转换完成
+	__IO u8	Charge_P_S			:1;			//充电保护，禁止充电
+	__IO u8	B3S_Finish_S 		:1;			
+	__IO u8	DCS_Finish_S 		:1;			
+	__IO u8	Capy_Calculate 		:1;
+	__IO u8	Print_S				:1;			
+	__IO u8	Test_Mod_S			:1;			
+	__IO u8	DCH_P_S			:1;			
+	__IO u8	AC_P_S				:1;			
+	__IO u8	H_Temp_S			:1;			
+	__IO u8	H_TempFAN_S		:1;			
+	__IO u8	H_DYQIFAN_S		:1;			
+	__IO u8	ADC_Finish_S 		:1;			//ADC转换完成
 }pstate;
 extern pstate State;
 
@@ -172,58 +172,58 @@ typedef struct _BBit
 	union
 	{	struct
 		{
-			u8  	DYQ_LowP			:1;		//输出低电量
-			u8  	V12_LowP			:1;		//输出低电量
-			u8  	USB_LowP			:1;		//输出低电量
-			u8  	BAT_LowP			:1;		//输出低电量
-			u8  	ACO_LowP			:1;		//输出低电量
-			u8 	RSVD5				:1;
-			u8 	RSVD6				:1;
-			u8 	RSVD7				:1;
+			__IO u8  	DYQ_LowP			:1;		//输出低电量
+			__IO u8  	V12_LowP			:1;		//输出低电量
+			__IO u8  	USB_LowP			:1;		//输出低电量
+			__IO u8  	BAT_LowP			:1;		//输出低电量
+			__IO u8  	ACO_LowP			:1;		//输出低电量
+			__IO u8 	RSVD5				:1;
+			__IO u8 	RSVD6				:1;
+			__IO u8 	RSVD7				:1;
 		}BitLowP;
-		u8 Byte_LowP;
+		__IO u8 Byte_LowP;
 	}Data_LowP;
 	union
 	{	struct
 		{
-			u8  	DYQ_Err				:1;		//输出故障
-			u8  	V12_Err				:1;		//输出故障，可检测拔出自动复位
-			u8  	USB_Err				:1;		//输出过压故障
-			u8  	ACO_Err				:1;		//输出故障
-			u8  	USB_Err2			:1;		//输出过流短路
-			u8 	RSVD5				:1;
-			u8 	RSVD6				:1;
-			u8 	RSVD7				:1;
+			__IO u8  	DYQ_Err				:1;		//输出故障
+			__IO u8  	V12_Err				:1;		//输出故障，可检测拔出自动复位
+			__IO u8  	USB_Err				:1;		//输出过压故障
+			__IO u8  	ACO_Err				:1;		//输出故障
+			__IO u8  	USB_Err2			:1;		//输出过流短路
+			__IO u8 	RSVD5				:1;
+			__IO u8 	RSVD6				:1;
+			__IO u8 	RSVD7				:1;
 		}BitOErr;
-		u8 Byte_OErr;
+		__IO u8 Byte_OErr;
 	}Data_OErr;
 	union
 	{	struct
 		{
-			u8  	CH_Err				:1;		//故障消失可自动复位
-			u8  	CH_Verr				:1;		//充电电压不对，拔出对应充电可复位
-			u8  	CH_OCErr			:1;		//充电过流MOS  保护
-			u8 	CH_TErr				:1;		//充电口过温
-			u8  	SUN_Err				:1;		//故障消失可自动复位
-			u8  	SUN_VErr			:1;		//充电电压不对，拔出对应充电可复位
-			u8 	SUN_OCErr			:1;		//充电过流MOS  保护
-			u8 	SUN_TErr			:1;		//充电口过温
+			__IO u8  	CH_Err				:1;		//故障消失可自动复位
+			__IO u8  	CH_Verr				:1;		//充电电压不对，拔出对应充电可复位
+			__IO u8  	CH_OCErr			:1;		//充电过流MOS  保护
+			__IO u8 	CH_TErr				:1;		//充电口过温
+			__IO u8  	SUN_Err				:1;		//故障消失可自动复位
+			__IO u8  	SUN_VErr			:1;		//充电电压不对，拔出对应充电可复位
+			__IO u8 	SUN_OCErr			:1;		//充电过流MOS  保护
+			__IO u8 	SUN_TErr			:1;		//充电口过温
 		}BitIErr;
-		u8 Byte_IErr;
+		__IO u8 Byte_IErr;
 	}Data_IErr;
 	union
 	{	struct
 		{
-			u8  	BatPro				:1;		//电池异常，禁止充放电
-			u8  	ACS_Err				:1;		//逆变板通信线断开，禁止开AC
-			u8  	B3Sc_Err			:1;		//采集板通信线断开，禁止充放电
-			u8  	RSVD3				:1;		
-			u8  	RSVD4				:1;		
-			u8 	RSVD5				:1;
-			u8 	RSVD6				:1;
-			u8 	RSVD7				:1;
+			__IO u8  	BatPro				:1;		//电池异常，禁止充放电
+			__IO u8  	ACS_Err				:1;		//逆变板通信线断开，禁止开AC
+			__IO u8  	B3Sc_Err			:1;		//采集板通信线断开，禁止充放电
+			__IO u8  	RSVD3				:1;		
+			__IO u8  	RSVD4				:1;		
+			__IO u8 	RSVD5				:1;
+			__IO u8 	RSVD6				:1;
+			__IO u8 	RSVD7				:1;
 		}BitBat;
-		u8 Byte_Bat;
+		__IO u8 Byte_Bat;
 	}Data_Bat;
 }pBBit;
 extern pBBit BuzzerBit;

@@ -11,7 +11,7 @@ u8 DYQ_Count[7]={0};
 u8 V12_Count[4]={0};
 u8 USB_Count[4]={0};
 u8 AC_OUT_Count[7]={0};
-u8 CH_Count[4]={0};
+u8 CH_Count[5]={0};
 u8 SUN_Count[4]={0};
 u8 CheckInput_Count[3]={0};
 u8 SUN_I_Count[3]={0};
@@ -109,7 +109,7 @@ void Printfstatus(void)
 	for(u8 i=0;i<AD_ChNUM;i++)
 		printf(" AD%d=%d ",i,AD_Data[i]);
 	printf("\r\n DYQ =%d",ReadBuf[DYQ_InitI]);
-	printf("F=0X%F",flag_data);
+	printf("F=0X%X",flag_data);
 	printf("\r\n");
 	for(u8 j=0;j<12;j++)
 		printf(" RX%d=%d ",j,RX_BUF[j]);
@@ -293,7 +293,7 @@ void V12_I_Sta(u8 n)
 }
 
 
-
+#if 0
 void Capacity_InVol(void)
 {
 	if(AD_Data[AD_V_Bat] <= Voltage_5) 
@@ -485,7 +485,7 @@ void Capacity_Init(void)
 		}
 	}
 }
-
+#endif
 
 void Check_Capacity_Sta(void)
 {	
@@ -1630,7 +1630,7 @@ void Operate_AC_OUT(void)
 void Operate_SUN_Ch(void)
 {
 	u8 SUN_ErrTimes;
-	if(!State.SUN_Ch_S)	
+	if(!State.SUN_Ch_S)
 	{
 		/*太阳能接入电压正常*/
 		if((AD_Data[AD_V_SUN] >= C_V_SUN) 
@@ -1644,7 +1644,8 @@ void Operate_SUN_Ch(void)
 				Access_SUN = SUN_Ch;
 				BuzzerBit.Data_IErr.BitIErr.SUN_VErr = 0;
 				DisplayBit.Data_IErr.BitIErr.SUN_VErr = 0;
-				if  ((!State.CH_Full_S) 
+				if  ((!State.CH_Full_S)
+				&& (!State.CH_Ch_S)
 				&& (!State.Charge_P_S)
 				&& (!State.H_Temp_S)
 				&& (!DisplayBit.Data_Bat.BitBat.BatPro)
@@ -1747,7 +1748,7 @@ void Operate_CH_Ch(void)
 		C_V_Charger = C_V_Charger_Normal;
 		P_V_Charger = P_V_Charger_Normal;
 	}
-	if(!State.CH_Ch_S)	
+	if(!State.CH_Ch_S)
 	{
 		/*充电器接入电压正常*/
 		if((AD_Data[AD_V_Charger] >= C_V_Charger) 
@@ -1850,6 +1851,10 @@ void Operate_CH_Ch(void)
 				Operate_SUN_Ch();
 			}
 		}
+	}
+	else
+	{
+		Operate_SUN_Ch();
 	}
 }
 void Operate_Out(void)

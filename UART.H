@@ -9,7 +9,7 @@
 #define   R_B3S_S		"B3S_" 
 #define   R_COM_S		"KCOM_" 
 
-#define   T_B3S_S		"B3S?_3V191231\r\n" 
+#define   T_B3S_S		"B3S?_3V200104\r\n" 
 #define   T_ACS_S		"ACS?\r\n" 
 #define   T_DCON_S		"DCON\r\n" 
 #define   T_DCOFF_S		"DCOFF\r\n" 
@@ -69,7 +69,7 @@ enum _Inquire
 typedef enum _Inquire p_Inquire;
 extern p_Inquire pInquire;
 
-extern u16 UART_RX_STA;
+extern __IO u16 UART_RX_STA;
 extern char UART_RX_BUF[UART_REC_LEN];
 extern int32 RX_BUF[14];
 
