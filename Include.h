@@ -29,10 +29,9 @@
 //#define 	DEBUG_MODE		
 
 
-
 #define	GPIO_SPEED			GPIO_Speed_50MHz
 #define 	IFPrintf(A)			do{\
-								if(A) printf(" *"#A"=%d\r\n",A);\
+								if(A) printf(" *"#A"=%d\r\n",(A));\
 							}\
 							while(0)
 
@@ -85,7 +84,7 @@
 #define	my_WDG_Config()	
 #define	my_SWD_In()		
 #define 	mPrintf(...)			//printf(__VA_ARGS__)
-#define 	mP(A) 				printf("%s=%d\n",#A,A)
+#define 	mP(A) 				printf("%s=%d\n",#A,(A))
 #else
 #define	my_WDG_Config()	WDG_Config()
 #define	my_SWD_In()		SWD_In()

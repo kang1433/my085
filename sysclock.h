@@ -21,18 +21,18 @@
 #define		SUN_Time		4
 #define		Ch_Time			5
 
-extern __IO u8 	BuzzerTime;				//鸣叫时间
-extern __IO u8 	Key_PressTime;			//按键时间
-extern __IO u16 	SW_DET_PressTime;		//总开关按下时间
-extern __IO u16	UART_RX_Time;      		//串口接收时间
-extern __IO u16	B3S_RX_Time;      		
-extern __IO u16	DCS_RX_Time;      		
-extern __IO u16	SUN_LowDuty_Time;
-extern __IO u16	CH_LowDuty_Time;
+extern u8 	BuzzerTime;				//鸣叫时间
+extern u8 	Key_PressTime;			//按键时间
+extern u16 	SW_DET_PressTime;		//总开关按下时间
+extern u16	UART_RX_Time;      		//串口接收时间
+extern u16	B3S_RX_Time;      		
+extern u16	DCS_RX_Time;      		
+extern u16	SUN_LowDuty_Time;
+extern u16	CH_LowDuty_Time;
 	
-extern __IO u32	Open_Time; 				//开机时间  
-extern __IO u32	LowP_Time; 			
-extern __IO u32	DYQ_INIT_Time; 
+extern u32	Open_Time; 				//开机时间  
+extern u32	LowP_Time; 			
+extern u32	DYQ_INIT_Time; 
 extern u16	ResTime[6];
 extern u16	Uptime[6];
 extern u32	ACOVTime[2];

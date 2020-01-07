@@ -44,7 +44,7 @@ extern int32 AD_Data[AD_ChNUM];
 
 
 void ADC1_Init(void);
-signed short CalculateTemperature(float R);
+int32 CalculateTemperature(float R);
 void GetTemperature(void);
 void ADC_Filter(void);
 void FILTER_UI(u16 *BUFFER,u8 num);

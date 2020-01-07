@@ -25,7 +25,7 @@ void Display_Frame(void)
 {
 	if((DisplayBit.Data_LowP.Byte_LowP)
 	||(DisplayBit.Data_Bat.BitBat.BatPro)
-	||(DisplayBit.Data_Bat.BitBat.B3Sc_Err))			
+	||(DisplayBit.Data_Bat.BitBat.B3Sc_Err))
 	{
 		if(Flicker_state)				
 			Vk1024B_DisSegOn(LCD_FRAME_BAT);	

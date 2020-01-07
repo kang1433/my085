@@ -188,9 +188,9 @@ const float  Resistance[TempSize]=
  }
 
  
- signed short CalculateTemperature(float R)
+int32 CalculateTemperature(float R)
 {
-	int   iTem;
+	int32   iTem;
 	u8 i;
 	u8 cBottom, cTop;
 	cBottom = 0; 
@@ -209,17 +209,17 @@ const float  Resistance[TempSize]=
 		}
 		else
 		{
-			iTem = (int)i - 30;
+			iTem = (int32)i - 30;
 			return iTem;
 		}
 	}
 	if((R-Resistance[cBottom])>(R-Resistance[cTop]))
 	{
-		iTem = (int)cTop  - 30;
+		iTem = (int32)cTop  - 30;
 	}
 	else
 	{
-		iTem = (int)cBottom  - 30;
+		iTem = (int32)cBottom  - 30;
 	}
 	return iTem;
 }

@@ -390,13 +390,14 @@ void Capacity_InVol(void)
 		}
 	}
 }
+#endif
 
 void Capacity_Init(void)
 {	
-	if(RX_BUF[Volbuf] == 0)//未接受到采集板信息，使用电压判断电量
-		Capacity_InVol();
-	else	//使用采集板SOC判断电量
-	{
+//	if(RX_BUF[Volbuf] == 0)//未接受到采集板信息，使用电压判断电量
+//		Capacity_InVol();
+//	else	//使用采集板SOC判断电量
+//	{
 		if(State.B3S_Finish_S)
 		{
 			State.B3S_Finish_S= 0;
@@ -409,7 +410,6 @@ void Capacity_Init(void)
 				{
 					SOC_Count[0] = 0;
 					Capacity=Capacity_0;
-					State.CH_Full_S = 0;
 					if((!DisplayBit.Data_LowP.BitLowP.BAT_LowP)&&(Charge_State == CH_None))
 					{
 						BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 1;
@@ -425,7 +425,6 @@ void Capacity_Init(void)
 					SOC_Count[1] = 0;
 					Clear_LowP(LOWP5);
 					Capacity=Capacity_5;
-					State.CH_Full_S = 0;
 				}
 			}
 			else if(RX_BUF[SOCbuf] < (SOC_40-SOC_Rang)) 
@@ -436,7 +435,6 @@ void Capacity_Init(void)
 					SOC_Count[2] = 0;
 					Clear_LowP(LOWP5);
 					Capacity=Capacity_20;
-					State.CH_Full_S = 0;
 				}
 			}
 			else if(RX_BUF[SOCbuf] < (SOC_60-SOC_Rang)) 
@@ -447,7 +445,6 @@ void Capacity_Init(void)
 					SOC_Count[3] = 0;
 					Clear_LowP(LOWP_ALL);
 					Capacity=Capacity_40;
-					State.CH_Full_S = 0;
 				}
 			}
 			else if(RX_BUF[SOCbuf] < (SOC_80-SOC_Rang)) 
@@ -458,10 +455,9 @@ void Capacity_Init(void)
 					SOC_Count[4] = 0;
 					Clear_LowP(LOWP_ALL);
 					Capacity=Capacity_60;
-					State.CH_Full_S = 0;
 				}
 			}
-			else if(RX_BUF[SOCbuf] < SOC_90) 
+			else if(RX_BUF[SOCbuf] < SOC_95) 
 			{
 				K_memset(5, SOC_Count,sizeof(SOC_Count));
 				if(SOC_Count[5] > SOC_BaseTimes)
@@ -469,7 +465,6 @@ void Capacity_Init(void)
 					SOC_Count[5] = 0;
 					Clear_LowP(LOWP_ALL);
 					Capacity=Capacity_80;
-					State.CH_Full_S = 0;
 				}
 			}
 			else 
@@ -483,13 +478,12 @@ void Capacity_Init(void)
 				}
 			}
 		}
-	}
+//	}
 }
-#endif
 
 void Check_Capacity_Sta(void)
 {	
-	u16 max,min;
+	int32 max,min;
 	if(AD_Data[AD_V_Bat] >= (Voltage_100+50)) 
 	{
 		K_memset(13, SOC_Count,sizeof(SOC_Count));
@@ -570,6 +564,7 @@ void Check_Capacity_Sta(void)
 						Capacity=Capacity_5;
 					else if(Capacity>Capacity_20)
 						Capacity=Capacity_20;
+					else {}
 				}
 			}
 			else if((RX_BUF[SOCbuf] <= (SOC_20+SOC_Rang))
@@ -598,6 +593,7 @@ void Check_Capacity_Sta(void)
 						Clear_LowP(LOWP_ALL);
 						Capacity=Capacity_40;
 					}
+					else {}
 				}
 			}
 			else if((RX_BUF[SOCbuf] <= (SOC_40+SOC_Rang))
@@ -623,6 +619,7 @@ void Check_Capacity_Sta(void)
 						Capacity=Capacity_40;
 					else if(Capacity>Capacity_60)
 						Capacity=Capacity_60;
+					else {}
 				}
 			}
 			else if((RX_BUF[SOCbuf] <= (SOC_60+SOC_Rang))
@@ -648,6 +645,7 @@ void Check_Capacity_Sta(void)
 						Capacity=Capacity_60;
 					else if(Capacity>Capacity_80)
 						Capacity=Capacity_80;
+					else {}
 				}
 			}
 			else if((RX_BUF[SOCbuf] <= (SOC_80+SOC_Rang))
@@ -693,6 +691,7 @@ void Check_Capacity_Sta(void)
 					}
 				}
 			}
+			else {}
 		}
 	}
 }
@@ -763,6 +762,7 @@ void Check_DYQ_Sta(void)
 			P_I_DYQ_Vau -=433;
 			P_I_DYQ_Vau += 5.36*(AD_Data[AD_V_Bat] - 12400);
 		}
+		else {}
 		
 		if((AD_Data[AD_V_Bat] > (Voltage_100+100)) || ((AD_Data[AD_V_DYQ] > DYQ_utmost) && (Uptime[DYQ_Time] > 1000)))
 		{
@@ -1203,6 +1203,7 @@ void Check_Charge_Sta(void)
 					Charge_Dutycycle++;
 					Charger_Op(1,CH_PWM,Charge_Dutycycle);
 				}
+				else {}
 			}
 			else 										//没有电流
 			{
@@ -1336,6 +1337,7 @@ void Check_Charge_Sta(void)
 					Charge_Dutycycle++;
 					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
 				}
+				else {}
 			}
 			else 										//没有电流
 			{
@@ -1445,10 +1447,14 @@ void Check_TempFAN(void)
 		BuzzerBit.Data_IErr.Byte_IErr &= 0X77;	//清零充电器与太阳能接口高温告警
 		DisplayBit.Data_IErr.Byte_IErr &= 0X77;
 	}
+	else {}
+	
 	if(AD_Data[AD_NTC] >= FAN_ON_TEMP)
 		State.H_TempFAN_S = 1;
 	else if(AD_Data[AD_NTC] < FAN_OFF_TEMP) 
 		State.H_TempFAN_S = 0;
+	else {}
+	
 	if((State.H_TempFAN_S) || (State.H_DYQIFAN_S))
 		FAN_ENABLE;
 	else
@@ -1482,7 +1488,6 @@ void Operate_DYQ(void)
 				if((!State.DYQ_S) && (!State.DCH_P_S) && ((DisplayBit.Data_LowP.Byte_LowP & 0x0f) ==0))
 					DYQ_Op(1);
 			}
-				
 			else if(Restart_Num[Num_DYQ] < NumOfRestarts)
 			{
 				if((!State.DYQ_S) && (!State.DCH_P_S) && ((DisplayBit.Data_LowP.Byte_LowP & 0x0f) ==0))
@@ -1493,6 +1498,8 @@ void Operate_DYQ(void)
 				DYQ_Op(0);
 				Restart_Num[Num_DYQ]++;
 			}
+			else {}
+			
 			if(ResTime[DYQ_Time] >= RestartTime)
 			{
 				State.DYQ_Restart_S = 0;
@@ -1538,6 +1545,8 @@ void Operate_12V(void)
 			V12_Op(0);
 			Restart_Num[Num_V12]++;
 		}
+		else {}
+
 		if(ResTime[V12_Time] >= RestartTime)
 		{
 			State.V12_Restart_S = 0;
@@ -1580,6 +1589,8 @@ void Operate_USB(void)
 			UBS_Op(0);
 			Restart_Num[Num_USB]++;
 		}
+		else {}
+
 		if(ResTime[USB_Time] >= RestartTime)
 		{
 			State.USB_Restart_S = 0;
@@ -1667,6 +1678,8 @@ void Operate_SUN_Ch(void)
 						Charger_Op(0,SUN_PWM,DOWN_Dutycycle);
 						Restart_Num[Num_SUN_Ch]++;
 					}
+					else {}
+
 					if(ResTime[SUN_Time] >= RestartTime)
 					{
 						State.Ch_Restart_S = 0;
@@ -1786,6 +1799,8 @@ void Operate_CH_Ch(void)
 						Charger_Op(0,CH_PWM,DOWN_Dutycycle);
 						Restart_Num[Num_CH_Ch]++;
 					}
+					else {}
+
 					if(ResTime[Ch_Time] >= RestartTime)
 					{
 						State.Ch_Restart_S = 0;
@@ -1962,6 +1977,7 @@ void Operate_Buzzer(void)
 				BuzzerTime = 0;
 				Buzzer_Count++;
 			}
+			else {}
 		}
 		else
 		{
@@ -1977,15 +1993,16 @@ void Operate_Buzzer(void)
 		if(Buzzer_Count < Num_BZ)
 		{
 			BuzzerTime++;
-			if(BuzzerTime < 2)					//响
+			if(BuzzerTime < 2)			//响
 				BUZZER_ENABLE;
-			else if(BuzzerTime < 5)				//顿
+			else if(BuzzerTime < 5)		//顿
 				BUZZER_DISABLE;
 			else if(BuzzerTime >= 21)
 			{
 				BuzzerTime = 0;
 				Buzzer_Count++;
 			}
+			else {}
 		}
 		else
 		{

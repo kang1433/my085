@@ -5,18 +5,18 @@
 
 #include "sysclock.h"
 
-__IO u8 	BuzzerTime = 0;					//鸣叫时间
-__IO u8 	Key_PressTime = 0;				//按键时间
-__IO u16 SW_DET_PressTime = 0;			//总开关按下时间
-__IO u16	UART_RX_Time = 0;      			//串口接收时间
-__IO u16	B3S_RX_Time = B3S_OVTime;      	//电池数据接收时间
-__IO u16	DCS_RX_Time = DCS_OVTime;      	//逆变数据接收时间
+u8 	BuzzerTime = 0;					//鸣叫时间
+u8 	Key_PressTime = 0;				//按键时间
+u16 SW_DET_PressTime = 0;			//总开关按下时间
+u16	UART_RX_Time = 0;      			//串口接收时间
+u16	B3S_RX_Time = B3S_OVTime;      	//电池数据接收时间
+u16	DCS_RX_Time = DCS_OVTime;      	//逆变数据接收时间
 
-__IO u32	Open_Time =0; 					//开机时间  
-__IO u32	LowP_Time =0; 					//低电量时间  
-__IO u32	DYQ_INIT_Time =0; 				//
-__IO u16	SUN_LowDuty_Time =0; 			//低占空比时间  
-__IO u16	CH_LowDuty_Time =0; 			//低占空比时间  
+u32	Open_Time =0; 					//开机时间  
+u32	LowP_Time =0; 					//低电量时间  
+u32	DYQ_INIT_Time =0; 				//
+u16	SUN_LowDuty_Time =0; 			//低占空比时间  
+u16	CH_LowDuty_Time =0; 			//低占空比时间  
 u16 ResTime[6];							//重启时间
 u16 Uptime[6];						//正常运行时间
 u32 ACOVTime[2];

@@ -6,7 +6,7 @@
 ***********************************************************************/
 #include "Uart.h"
 
-__IO u16 UART_RX_STA=0;
+u16 UART_RX_STA=0;
 char UART_RX_BUF[UART_REC_LEN];
 int32 RX_BUF[14] = {0};
 p_Inquire pInquire;

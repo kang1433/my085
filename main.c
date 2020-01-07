@@ -57,7 +57,7 @@ void StartInitialization(void)
 			printf("B3S?\r\n");
 		}
 		ACSDCSB3S_State();
-		Check_Capacity_Sta();	//Capacity_Init();
+		Capacity_Init();
 		if(((Open_Time%300) < 215) && ((Open_Time%300) > 200))
 			printf("DCOFF\r\n");			
 		if(Open_Time > 2000)
@@ -84,7 +84,7 @@ void StartInitialization(void)
 			Init_DYQ();
 			ADC_Filter();
 			Vk1024B_DisAll(1);
-			Check_Capacity_Sta();	//Capacity_Init();
+			Capacity_Init();
 			Feed_Dog();
 		}
 	}
@@ -102,7 +102,7 @@ void StartInitialization(void)
 				Feed_Dog();
 			}
 			ACSDCSB3S_State();
-			Check_Capacity_Sta();	//Capacity_Init();
+			Capacity_Init();
 			if(((Open_Time%300) < 215) && ((Open_Time%300) > 200))
 				printf("DCOFF\r\n");			
 			if(Access_SUN || Access_CH)
@@ -113,7 +113,7 @@ void StartInitialization(void)
 			ADC_Filter();
 		}
 	}
-//	memset(SOC_Count,0,sizeof(SOC_Count));
+	memset(SOC_Count,0,sizeof(SOC_Count));
 //	memset(Vol_Count,0,sizeof(Vol_Count));
 	FLASH_ReadNWord((uint16_t*)ReadBuf_nocheck, FLASH_ADDR_DATA, LENGTH_DATA);
 	if((ReadBuf_nocheck[DYQ_InitI] >= 0)

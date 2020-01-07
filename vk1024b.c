@@ -195,7 +195,7 @@ unsigned char CheckDisAll(u8 displays)
 	}
 	else
 	{
-		if(Display_Sta)
+		if(Display_Sta != 0)
 		{
 			Display_Sta=0;
 			return 1;

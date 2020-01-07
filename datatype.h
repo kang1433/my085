@@ -74,9 +74,11 @@ typedef u16				X_NodeId;
 typedef u8				X_Mac[8];
 
 //--- Utility ----------------------------------------------------------------//
-#define DelBit(data, bit)   		((data) &= (0xff ^ ((uint32)0x01 << (bit))))
-#define SetBit(data, bit)   		((data) |= ((uint32)0x01 << (bit)))
-#define GetBit(data, bit)		(((data) >> (bit)) & (uint32)0x01)
+#define	DelBit(data, bit)   		((data) &= (0xff ^ ((uint32)0x01 << (bit))))
+#define	SetBit(data, bit)   		((data) |= ((uint32)0x01 << (bit)))
+#define	GetBit(data, bit)		(((data) >> (bit)) & (uint32)0x01)
+#define	MAX(a, b)			(((a) > (b)) ? (a) : (b)) 
+#define	MIN(a, b)			(((a) < (b)) ? (a) : (b)) 
 
 /**
  * @brief Returns the low byte of the 16-bit value \c n as an \c int8u.
