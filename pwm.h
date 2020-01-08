@@ -7,7 +7,8 @@
 #define FULL_Dutycycle 		100
 #define START_Dutycycle_SUN	5
 #define START_Dutycycle_CH	5
-#define Middle_Dutycycle		90
+#define HIGHT_Dutycycle		90
+#define Middle_Dutycycle		50
 #define DOWN_Dutycycle 		0
 #define PR_Dutycycle_SUN 	30
 #define PR_Dutycycle_CH 		20

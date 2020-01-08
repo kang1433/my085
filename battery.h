@@ -27,8 +27,8 @@ extern u8 Buzzer_Count;				//蜂鸣器计数器
 #define LENGTH_DATA		5              //数据长度
 
 extern uint16_t flag_data;                            //数据写入标志位
-extern int16 DYQInitData[LENGTH_DATA];
-extern int16 ReadBuf[LENGTH_DATA];                   //读出的数据
+extern u16 DYQInitData[LENGTH_DATA];
+extern u16 ReadBuf[LENGTH_DATA];                   //读出的数据
 
 /*********温度定义**********/
 #define AC_P_TEMP			85

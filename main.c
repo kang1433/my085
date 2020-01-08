@@ -44,7 +44,7 @@ void IAP_Set()
 
 void StartInitialization(void)
 {
-	int16 ReadBuf_nocheck[LENGTH_DATA];                   //读出的数据
+	u16 ReadBuf_nocheck[LENGTH_DATA];                   //读出的数据
 	Capacity=Capacity_100;
 	Vk1024B_DisAll(0);
 	while(GET_SW_DET==1)	//15ms
@@ -116,8 +116,7 @@ void StartInitialization(void)
 	memset(SOC_Count,0,sizeof(SOC_Count));
 //	memset(Vol_Count,0,sizeof(Vol_Count));
 	FLASH_ReadNWord((uint16_t*)ReadBuf_nocheck, FLASH_ADDR_DATA, LENGTH_DATA);
-	if((ReadBuf_nocheck[DYQ_InitI] >= 0)
-	&& (ReadBuf_nocheck[DYQ_InitI] < 500))
+	if(ReadBuf_nocheck[DYQ_InitI] < 500)
 		memcpy(ReadBuf,ReadBuf_nocheck,sizeof(ReadBuf));
 }
 

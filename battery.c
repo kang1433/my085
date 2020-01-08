@@ -2,8 +2,8 @@
 #include "battery.h"
 
 uint16_t flag_data;                            //数据写入标志位
-int16 DYQInitData[LENGTH_DATA];
-int16 ReadBuf[LENGTH_DATA];                   //读出的数据
+u16 DYQInitData[LENGTH_DATA];
+u16 ReadBuf[LENGTH_DATA];                   //读出的数据
 
 u8 Vol_Count[7]={0};
 u8 SOC_Count[15]={0};
@@ -11,7 +11,7 @@ u8 DYQ_Count[7]={0};
 u8 V12_Count[4]={0};
 u8 USB_Count[4]={0};
 u8 AC_OUT_Count[7]={0};
-u8 CH_Count[5]={0};
+u8 CH_Count[4]={0};
 u8 SUN_Count[4]={0};
 u8 CheckInput_Count[3]={0};
 u8 SUN_I_Count[3]={0};
@@ -703,14 +703,14 @@ u8 Init_DYQ_OpV(void)
 	{
 		ADC_Filter();
 		Feed_Dog();
-		DYQInitData[DYQ_OnVolt] = (int16)AD_Data[AD_V_DYQ];
+		DYQInitData[DYQ_OnVolt] = (u16)AD_Data[AD_V_DYQ];
 		/*大于12v才认为是有效电压，否则继续等待*/
 		if((DYQInitData[DYQ_OnVolt] > 12000)
 		&& (DYQInitData[DYQ_OnVolt] < 13000))
 		{
-			DYQInitData[DYQ_InitI] = (int16)AD_Data[AD_I_DYQ];
+			DYQInitData[DYQ_InitI] = (u16)AD_Data[AD_I_DYQ];
 			DYQ_Op(0);
-			DYQInitData[DYQ_OffTime] = (int16)Open_Time;//记录关点烟器时间
+			DYQInitData[DYQ_OffTime] = (u16)Open_Time;//记录关点烟器时间
 			return 0;
 		}
 		else 
@@ -730,13 +730,13 @@ void Init_DYQ(void)
 	&& (0xAA55 != flag_data))
 	{
 		ADC_Filter();
-		DYQInitData[DYQ_OffVolt] = (int16)AD_Data[AD_V_DYQ];
+		DYQInitData[DYQ_OffVolt] = (u16)AD_Data[AD_V_DYQ];
 		if((DYQInitData[DYQ_OffVolt] > 11500)	//依然大于11.5V认为点烟口无接负载
 		&& (DYQInitData[DYQ_OffVolt] < 13000)
-		&& (DYQInitData[DYQ_InitI] >= 0)
+//		&& (DYQInitData[DYQ_InitI] >= 0)
 		&& (DYQInitData[DYQ_InitI] < 500))
 		{
-			DYQInitData[DYQ_CollecTime] = (int16)Open_Time;
+			DYQInitData[DYQ_CollecTime] = (u16)Open_Time;
 			flag_data = 0xAA55;		//将标志位置为"已写入"
 			FLASH_WriteNWord(&flag_data, FLASH_ADDR_FLAG, 1);
 			FLASH_WriteNWord((uint16_t*)&DYQInitData, FLASH_ADDR_DATA, LENGTH_DATA);
@@ -967,6 +967,7 @@ void Check_AC_OUT_Sta(void)
 					AC_OUT_Count[3] =0 ;
 					AC_OUT_State = Out_Normal;
 					State.AC_OV3min_S =1;
+					State.AC_OV15min_S =1;
 					Clear_ACOUT_ERR();
 					if(ACOVTime[0] >= (3*Onemin))
 					{
@@ -1193,7 +1194,7 @@ void Check_Charge_Sta(void)
 				Clear_CH_ERR();
 				State.CH_LDuty_S = 0;
 				CH_LowDuty_Time = 0;
-				if(Charge_Dutycycle < Middle_Dutycycle)
+				if(Charge_Dutycycle < HIGHT_Dutycycle)
 				{
 					Charge_Dutycycle+=10;
 					Charger_Op(1,CH_PWM,Charge_Dutycycle);
@@ -1327,7 +1328,7 @@ void Check_Charge_Sta(void)
 				Clear_SUN_ERR();
 				State.SUN_LDuty_S = 0;
 				SUN_LowDuty_Time = 0;
-				if(Charge_Dutycycle < Middle_Dutycycle)
+				if(Charge_Dutycycle < HIGHT_Dutycycle)
 				{
 					Charge_Dutycycle+=10;
 					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
