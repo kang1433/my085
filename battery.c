@@ -1771,13 +1771,16 @@ void Operate_CH_Ch(void)
 			K_memset(1, CH_Count,sizeof(CH_Count));
 			if(CH_Count[1] > CH_NorTimes)
 			{
+				if(State.SUN_Ch_S)	//切换到充电器充电，关太阳能
+					Charger_Op(0,SUN_PWM,DOWN_Dutycycle);
+			}
+			if(CH_Count[1] > (CH_NorTimes+1))
+			{
 				CH_Count[1] =0 ;
 				Access_CH = CH_Ch;
 				State.CH_NV_S = 1;
 				BuzzerBit.Data_IErr.BitIErr.CH_Verr = 0;
 				DisplayBit.Data_IErr.BitIErr.CH_Verr = 0;
-				if(State.SUN_Ch_S)	//切换到充电器充电，关太阳能
-					Charger_Op(0,SUN_PWM,DOWN_Dutycycle);
 				if  ((!State.CH_Full_S) 
 				&& (!State.Charge_P_S)
 				&& (!State.H_Temp_S)
