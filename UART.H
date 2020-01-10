@@ -4,15 +4,6 @@
 
 
 
-#define   R_ACS_S		"ACS_" 
-#define   R_DCS_S		"DCS_" 
-#define   R_B3S_S		"B3S_" 
-#define   R_COM_S		"KCOM_" 
-
-#define   T_B3S_S		"B3S?_3V200109\r\n" 
-#define   T_ACS_S		"ACS?\r\n" 
-#define   T_DCON_S		"DCON\r\n" 
-#define   T_DCOFF_S		"DCOFF\r\n" 
 
 
 #define B3S_OVTime			30000

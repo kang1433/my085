@@ -26,8 +26,24 @@
 
 
 #define 	Power300W
+#define 	CHARGER_5A
 //#define 	DEBUG_MODE		
 
+
+#define   R_ACS_S		"ACS_" 
+#define   R_DCS_S		"DCS_" 
+#define   R_B3S_S		"B3S_" 
+#define   R_COM_S		"KCOM_" 
+
+#define   T_ACS_S		"ACS?\r\n" 
+#define   T_DCON_S		"DCON\r\n" 
+#define   T_DCOFF_S		"DCOFF\r\n" 
+
+#ifdef Power300W
+#define   T_B3S_S		"B3S?_3200110\r\n" 
+#else
+#define   T_B3S_S		"B3S?_5200110\r\n" 
+#endif
 
 #define	GPIO_SPEED			GPIO_Speed_50MHz
 #define 	IFPrintf(A)			do{\
@@ -56,7 +72,7 @@
 #define   SUN_I_Nor 			5100	
 #define   SUN_I_Pro			5700
 
-#ifdef Power300W			
+#ifdef CHARGER_5A			
 #define   CH_I_Less			3000	
 #define   CH_I_Little			4500	
 #define   CH_I_Nor 			5100	
@@ -65,7 +81,7 @@
 #define   CH_I_Less			6000	
 #define   CH_I_Little			9000	
 #define   CH_I_Nor 			10100	
-#define   CH_I_Pro			10500
+#define   CH_I_Pro			10400
 #endif
 
 
@@ -89,8 +105,12 @@
 #define	my_WDG_Config()	WDG_Config()
 #define	my_SWD_In()		SWD_In()
 #define 	mPrintf(...)	
-
 #endif
+
+
+
+
+
 
 #endif
 

@@ -113,7 +113,8 @@ void TIM1_PWM_Config (void)
 	TIM_OC4PreloadConfig(TIM1,TIM_OCPreload_Enable);
 
 	TIM_Cmd(TIM1,ENABLE);
-	TIM_CtrlPWMOutputs(TIM1,ENABLE);  //PWM输出使能
+	 // 主输出使能，当使用的是通用定时器时，这句不需要 
+	TIM_CtrlPWMOutputs(TIM1,ENABLE);
 }
 
 

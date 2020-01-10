@@ -122,10 +122,10 @@ const float  Resistance[TempSize]=
 	 DMA_DeInit(DMA1_Channel1);
 	 
 	 /*DMA外设ADC基地址*/
-	 DMA_InitStructure.DMA_PeripheralBaseAddr =(uint32_t)&ADC1->DR;// (uint32_t)ADC1_DR_Address;//(uint32_t)&ADC1->DR;
+	 DMA_InitStructure.DMA_PeripheralBaseAddr =(uint32_t)(&(ADC1->DR));// (uint32_t)ADC1_DR_Address;//(uint32_t)&ADC1->DR;
 	 
 	 /*DMA内存基地址*/
-	 DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&ADC_ConvertedValue;
+	 DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)ADC_ConvertedValue;
 	 
 	 /*外设作为数据传输源*/
 	 DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
