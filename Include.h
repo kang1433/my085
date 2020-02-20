@@ -25,8 +25,8 @@
 #include "vk1024b.h"
 
 
-#define 	Power300W
-#define 	CHARGER_5A
+//#define 	Power300W
+//#define 	CHARGER_5A
 //#define 	DEBUG_MODE		
 
 
@@ -40,9 +40,9 @@
 #define   T_DCOFF_S		"DCOFF\r\n" 
 
 #ifdef Power300W
-#define   T_B3S_S		"B3S?_3200110\r\n" 
+#define   T_B3S_S		"B3S?_3200210\r\n" 
 #else
-#define   T_B3S_S		"B3S?_5200110\r\n" 
+#define   T_B3S_S		"B3S?_5200210\r\n" 
 #endif
 
 #define	GPIO_SPEED			GPIO_Speed_50MHz
