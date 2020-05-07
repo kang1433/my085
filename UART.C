@@ -322,6 +322,7 @@ void ACSDCSB3S_State(void)
 
 
 #if 1
+//#pragma import(__use_no_semihosting) 
 struct __FILE 
 { 
 	int handle; 
