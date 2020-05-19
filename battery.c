@@ -564,7 +564,6 @@ void Check_Capacity_Sta(void)
 						Capacity=Capacity_5;
 					else if(Capacity>Capacity_20)
 						Capacity=Capacity_20;
-					else {}
 				}
 			}
 			else if((RX_BUF[SOCbuf] <= (SOC_20+SOC_Rang))
@@ -593,7 +592,6 @@ void Check_Capacity_Sta(void)
 						Clear_LowP(LOWP_ALL);
 						Capacity=Capacity_40;
 					}
-					else {}
 				}
 			}
 			else if((RX_BUF[SOCbuf] <= (SOC_40+SOC_Rang))
@@ -619,7 +617,6 @@ void Check_Capacity_Sta(void)
 						Capacity=Capacity_40;
 					else if(Capacity>Capacity_60)
 						Capacity=Capacity_60;
-					else {}
 				}
 			}
 			else if((RX_BUF[SOCbuf] <= (SOC_60+SOC_Rang))
@@ -645,7 +642,6 @@ void Check_Capacity_Sta(void)
 						Capacity=Capacity_60;
 					else if(Capacity>Capacity_80)
 						Capacity=Capacity_80;
-					else {}
 				}
 			}
 			else if((RX_BUF[SOCbuf] <= (SOC_80+SOC_Rang))
@@ -691,7 +687,6 @@ void Check_Capacity_Sta(void)
 					}
 				}
 			}
-			else {}
 		}
 	}
 }
@@ -762,7 +757,6 @@ void Check_DYQ_Sta(void)
 			P_I_DYQ_Vau -=433;
 			P_I_DYQ_Vau += 5.36*(AD_Data[AD_V_Bat] - 12400);
 		}
-		else {}
 		
 		if((AD_Data[AD_V_Bat] > (Voltage_100+100)) || ((AD_Data[AD_V_DYQ] > DYQ_utmost) && (Uptime[DYQ_Time] > 1000)))
 		{
@@ -1205,7 +1199,6 @@ void Check_Charge_Sta(void)
 					Charge_Dutycycle++;
 					Charger_Op(1,CH_PWM,Charge_Dutycycle);
 				}
-				else {}
 			}
 			else 										//没有电流
 			{
@@ -1384,7 +1377,6 @@ void Check_Charge_Sta(void)
 					Charge_Dutycycle++;
 					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
 				}
-				else {}
 			}
 			else 										//没有电流
 			{
@@ -1494,13 +1486,11 @@ void Check_TempFAN(void)
 		BuzzerBit.Data_IErr.Byte_IErr &= 0X77;	//清零充电器与太阳能接口高温告警
 		DisplayBit.Data_IErr.Byte_IErr &= 0X77;
 	}
-	else {}
 	
 	if(AD_Data[AD_NTC] >= FAN_ON_TEMP)
 		State.H_TempFAN_S = 1;
 	else if(AD_Data[AD_NTC] < FAN_OFF_TEMP) 
 		State.H_TempFAN_S = 0;
-	else {}
 	
 	if((State.H_TempFAN_S) || (State.H_DYQIFAN_S))
 		FAN_ENABLE;
@@ -2035,7 +2025,6 @@ void Operate_Buzzer(void)
 				BuzzerTime = 0;
 				Buzzer_Count++;
 			}
-			else {}
 		}
 		else
 		{
@@ -2060,7 +2049,6 @@ void Operate_Buzzer(void)
 				BuzzerTime = 0;
 				Buzzer_Count++;
 			}
-			else {}
 		}
 		else
 		{
