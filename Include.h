@@ -40,9 +40,9 @@
 #define   T_DCOFF_S		"DCOFF\r\n" 
 
 #ifdef Power300W
-#define   T_B3S_S		"B3S?_3200210\r\n" 
+#define   T_B3S_S		"B3S?_300W-A0\r\n" 
 #else
-#define   T_B3S_S		"B3S?_5200210\r\n" 
+#define   T_B3S_S		"B3S?_500W-A0\r\n" 
 #endif
 
 #define	GPIO_SPEED			GPIO_Speed_50MHz
