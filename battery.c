@@ -765,6 +765,7 @@ void Check_DYQ_Sta(void)
 			{
 				DYQ_Count[0] = 0;
 				DYQ_Op(0);
+				Restart_Num[Num_DYQ]++;
 				SET_DYQ_ERR();
 			}
 		}
@@ -1500,12 +1501,12 @@ void Check_TempFAN(void)
 
 void Operate_DYQ(void)
 {
-	if((!State.DYQ_S) && (AD_Data[AD_V_DYQ] > DYQ_utmost))
-	{
-		SET_DYQ_ERR();
-	}
-	else
-	{
+//	if((!State.DYQ_S) && (AD_Data[AD_V_DYQ] > DYQ_utmost))
+//	{
+//		SET_DYQ_ERR();
+//	}
+//	else
+//	{
 		if(Capacity < Capacity_5)	//µçÁ¿²»×ã
 		{
 			if(DYQ_OUT_State)
@@ -1544,7 +1545,7 @@ void Operate_DYQ(void)
 				DYQ_Op(1);
 			}
 		}
-	}
+//	}
 }
 
 void Operate_12V(void)

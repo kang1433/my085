@@ -25,8 +25,8 @@
 #include "vk1024b.h"
 
 
-//#define 	Power300W
-//#define 	CHARGER_5A
+#define 	Power300W
+#define 	CHARGER_5A
 //#define 	DEBUG_MODE		
 
 
