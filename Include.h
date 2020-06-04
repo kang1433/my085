@@ -25,10 +25,12 @@
 #include "vk1024b.h"
 
 
-//#define 	Power300W
-//#define 	CHARGER_5A
+//#define 	Power300W				//逆变功率限制300W
+//#define 	CHARGER_5A				//市电充电限流5A时开启定义
+//#define 	CHARGE_EXCHANGE		//需对调充电口时开启定义
 //#define 	DEBUG_MODE		
-#define 	CHARGE_EXCHANGE		
+
+
 
 #define   R_ACS_S		"ACS_" 
 #define   R_DCS_S		"DCS_" 
@@ -43,17 +45,17 @@
 #define	SUN_PWM		0
 #define	CH_PWM		1
 	#ifdef Power300W
-	#define   T_B3S_S		"B3S?_300W-B0\r\n" 
+	#define   T_B3S_S		"B3S?_300W-B1\r\n" 
 	#else
-	#define   T_B3S_S		"B3S?_500W-B0\r\n" 
+	#define   T_B3S_S		"B3S?_500W-B1\r\n" 
 	#endif
 #else
 #define	SUN_PWM		1
 #define	CH_PWM		0
 	#ifdef Power300W
-	#define   T_B3S_S		"B3S?_300W-A0\r\n" 
+	#define   T_B3S_S		"B3S?_300W-A1\r\n" 
 	#else
-	#define   T_B3S_S		"B3S?_500W-A0\r\n" 
+	#define   T_B3S_S		"B3S?_500W-A1\r\n" 
 	#endif
 #endif
 
@@ -69,12 +71,12 @@
 #define   Diode_V				450					//单位mV
 #define   N_V_Charger		(9000- Diode_V)		//单位mV
 #define   C_V_Charger_Normal	(12400-Diode_V)
-#define   P_V_Charger_Normal	(13100-Diode_V)		
+#define   P_V_Charger_Normal	(14000-Diode_V)		
 #define   C_V_Charger_Test	(10500-Diode_V)
 #define   P_V_Charger_Test	(14100-Diode_V)		
 
 #define   N_V_SUN			(9000- Diode_V)		//单位mV
-#define   C_V_SUN			(12700-Diode_V)
+#define   C_V_SUN			(12650-Diode_V)
 #define   P_V_SUN			(24500-Diode_V)	
 /*********充电电流阀值定义*********/
 #define   Zero_I_L			150		//ma
