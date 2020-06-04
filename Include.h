@@ -69,11 +69,11 @@
 
 /*********充电电压阀值定义*********/
 #define   Diode_V				450					//单位mV
-#define   N_V_Charger		(9000- Diode_V)		//单位mV
-#define   C_V_Charger_Normal	(12400-Diode_V)
-#define   P_V_Charger_Normal	(14000-Diode_V)		
+#define   N_V_Charger 		(9000- Diode_V)		//单位mV
+#define   C_V_Charger_Normal (12400-Diode_V)
+#define   P_V_Charger_Normal (14000-Diode_V)		
 #define   C_V_Charger_Test	(10500-Diode_V)
-#define   P_V_Charger_Test	(14100-Diode_V)		
+#define   P_V_Charger_Test	(15100-Diode_V)		
 
 #define   N_V_SUN			(9000- Diode_V)		//单位mV
 #define   C_V_SUN			(12650-Diode_V)
