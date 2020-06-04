@@ -128,13 +128,21 @@ void Charger_Op(u8 sta, u8 Channel,u8 Dutycycle)
 	{
 		if(Channel)
 		{
+#ifdef CHARGE_EXCHANGE
+			State.CH_Ch_S = sta;
+#else
 			State.SUN_Ch_S = sta;
+#endif
 			TIM1->CCR4 = 0;
 			TIM1->CCR1 = tim1_pulse;
 		}
 		else
 		{
+#ifdef CHARGE_EXCHANGE
+			State.SUN_Ch_S = sta;
+#else
 			State.CH_Ch_S = sta;
+#endif
 			TIM1->CCR1 = 0;
 			TIM1->CCR4 = tim1_pulse;
 		}
@@ -145,13 +153,23 @@ void Charger_Op(u8 sta, u8 Channel,u8 Dutycycle)
 		Charge_State = CH_None;
 		if(Channel)
 		{
+#ifdef CHARGE_EXCHANGE
+			State.CH_Ch_S = sta;
+			Uptime[Ch_Time] = 0;
+#else
 			State.SUN_Ch_S = sta;
 			Uptime[SUN_Time] = 0;
+#endif
 		}
 		else
 		{
+#ifdef CHARGE_EXCHANGE
+			State.SUN_Ch_S = sta;
+			Uptime[SUN_Time] = 0;
+#else
 			State.CH_Ch_S = sta;
 			Uptime[Ch_Time] = 0;
+#endif
 		}
 		TIM1->CCR1 = 0;
 		TIM1->CCR4 = 0;

@@ -22,8 +22,6 @@ extern u8 Buzzer_Count;				//蜂鸣器计数器
 #define NumOfRestarts		4		//启动次数
 #define RestartTime			9000	//重启时间
 #define MaxPow  				525
-#define SUN_PWM			1
-#define CH_PWM				0
 #define LENGTH_DATA		5              //数据长度
 
 extern uint16_t flag_data;                            //数据写入标志位

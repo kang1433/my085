@@ -29,14 +29,7 @@ extern int32 AD_Data[AD_ChNUM];
 #define   ADC_V_DYQ		 	0x08	//点烟口前级电压检测	
 #define   ADC_I_DYQ		 	0x09	//点烟口后级电流检测	
 
-#define   AD_I_12V		 	0x00	
-#define   AD_I_Charge		0x01	
-#define   AD_NTC		 		0x02	
-#define   AD_V_Bat			0x03	
-#define   AD_V_Charger		0x04	
-#define   AD_V_SUN			0x05
-#define   AD_V_DYQ		 	0x06	
-#define   AD_I_DYQ		 	0x07	
+
 
 
 #define DYQRATIO			132.33 	// 136

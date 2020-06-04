@@ -25,10 +25,10 @@
 #include "vk1024b.h"
 
 
-#define 	Power300W
-#define 	CHARGER_5A
+//#define 	Power300W
+//#define 	CHARGER_5A
 //#define 	DEBUG_MODE		
-
+#define 	CHARGE_EXCHANGE		
 
 #define   R_ACS_S		"ACS_" 
 #define   R_DCS_S		"DCS_" 
@@ -39,11 +39,24 @@
 #define   T_DCON_S		"DCON\r\n" 
 #define   T_DCOFF_S		"DCOFF\r\n" 
 
-#ifdef Power300W
-#define   T_B3S_S		"B3S?_300W-A0\r\n" 
+#ifdef CHARGE_EXCHANGE
+#define	SUN_PWM		0
+#define	CH_PWM		1
+	#ifdef Power300W
+	#define   T_B3S_S		"B3S?_300W-B0\r\n" 
+	#else
+	#define   T_B3S_S		"B3S?_500W-B0\r\n" 
+	#endif
 #else
-#define   T_B3S_S		"B3S?_500W-A0\r\n" 
+#define	SUN_PWM		1
+#define	CH_PWM		0
+	#ifdef Power300W
+	#define   T_B3S_S		"B3S?_300W-A0\r\n" 
+	#else
+	#define   T_B3S_S		"B3S?_500W-A0\r\n" 
+	#endif
 #endif
+
 
 #define	GPIO_SPEED			GPIO_Speed_50MHz
 #define 	IFPrintf(A)			do{\
@@ -83,6 +96,24 @@
 #define   CH_I_Nor 			10100	
 #define   CH_I_Pro			10400
 #endif
+
+/*************ADC口定义*************/
+#define   AD_I_12V		 	0x00	
+#define   AD_I_Charge		0x01	
+#define   AD_NTC		 		0x02	
+#define   AD_V_Bat			0x03	
+
+#define   AD_V_DYQ		 	0x06	
+#define   AD_I_DYQ		 	0x07	
+
+#ifdef CHARGE_EXCHANGE
+#define   AD_V_Charger		0x05	//将充电口功能对调
+#define   AD_V_SUN			0x04
+#else
+#define   AD_V_Charger		0x04	
+#define   AD_V_SUN			0x05
+#endif
+/******************END*****************/
 
 
 /*********DC电流阀值定义*********/
