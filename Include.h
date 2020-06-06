@@ -25,8 +25,8 @@
 #include "vk1024b.h"
 
 
-//#define 	Power300W				//逆变功率限制300W
-//#define 	CHARGER_5A				//市电充电限流5A时开启定义
+#define 	Power300W				//逆变功率限制300W
+#define 	CHARGER_5A				//市电充电限流5A时开启定义
 //#define 	CHARGE_EXCHANGE		//需对调充电口时开启定义
 //#define 	DEBUG_MODE		
 

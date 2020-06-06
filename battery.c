@@ -109,11 +109,11 @@ void Printfstatus(void)
 	for(u8 i=0;i<AD_ChNUM;i++)
 		printf(" AD%d=%d ",i,AD_Data[i]);
 	printf("\r\n DYQ =%d",ReadBuf[DYQ_InitI]);
-	printf("F=0X%X",flag_data);
+	printf(" F=0X%X",flag_data);
 	printf("\r\n");
 	for(u8 k=0;k<3;k++)
 		printf(" RC%d=%d ",k,AC_Record[k]);
-	printf("\r\n");
+	printf("200606\r\n");
 	for(u8 j=0;j<12;j++)
 		printf(" RX%d=%d ",j,RX_BUF[j]);
 	printf("\r\n *T3=%d",ACOVTime[0]);
