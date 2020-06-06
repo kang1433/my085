@@ -13,7 +13,7 @@ extern u8 Buzzer_Count;				//·äÃùÆ÷¼ÆÊıÆ÷
 #define V12_BaseTimes		3
 #define DYQ_BaseTimes		3
 #define In_BaseTimes			0
-#define AC_OUT_BaseTimes	1
+#define AC_OUT_BaseTimes	3
 #define CH_NorTimes			2
 #define USB_BaseTimes		3
 #define CH_IBaseTimes		1

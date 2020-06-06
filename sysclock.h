@@ -10,7 +10,7 @@
 #define		SUNLDUTYTIME		3000
 #define		CHLDUTYTIME		3000
 #define		OneHour				3600000
-#define		Onemin				57000
+#define		Onemin				55000
 #define		CLOSETIME			(1*3600000)			//放置关机时间小时
 #define		LOWPCLOSETIME		((1*60000)+29000)	//低电量关机时间分钟
 

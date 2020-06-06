@@ -18,7 +18,7 @@ u8 SUN_I_Count[3]={0};
 u8 CH_I_Count[4]={0};
 u8 Restart_Num[6]={0};
 u8 Buzzer_Count = 0;				//·äÃùÆ÷¼ÆÊýÆ÷
-
+int32 AC_Record[3]={0};
 P_Capacity Capacity;
 pstate State;
 p_OUT_State V12_OUT_State;
@@ -111,6 +111,9 @@ void Printfstatus(void)
 	printf("\r\n DYQ =%d",ReadBuf[DYQ_InitI]);
 	printf("F=0X%X",flag_data);
 	printf("\r\n");
+	for(u8 k=0;k<3;k++)
+		printf(" RC%d=%d ",k,AC_Record[k]);
+	printf("\r\n");
 	for(u8 j=0;j<12;j++)
 		printf(" RX%d=%d ",j,RX_BUF[j]);
 	printf("\r\n *T3=%d",ACOVTime[0]);
@@ -175,6 +178,8 @@ void Clear_USB_ERR(void)
 
 void Clear_ACOUT_ERR(void)
 {
+	if(AC_Record[0])
+		memset(AC_Record,0,sizeof(AC_Record));
 	if(Uptime[AC_Time] >= OpDuration)
 	{
 		BuzzerBit.Data_OErr.BitOErr.ACO_Err = 0;
@@ -926,6 +931,9 @@ void Check_AC_OUT_Sta(void)
 			K_memset(0, AC_OUT_Count,sizeof(AC_OUT_Count));
 			if(AC_OUT_Count[0] > (AC_OUT_BaseTimes))
 			{
+				AC_Record[0] = 1;
+				AC_Record[1] = RX_BUF[AcsState];
+				AC_Record[2] = RX_BUF[DcsState];
 				AC_OUT_Count[0] =0 ;
 				AC_OUT_Op(0);
 				SET_ACOUT_ERR();
@@ -934,8 +942,11 @@ void Check_AC_OUT_Sta(void)
 		else if(RX_BUF[ACVol]  < 900)
 		{
 			K_memset(1, AC_OUT_Count,sizeof(AC_OUT_Count));
-			if(AC_OUT_Count[1] > (10*AC_OUT_BaseTimes))
+			if(AC_OUT_Count[1] > (6*AC_OUT_BaseTimes))
 			{
+				AC_Record[0] = 2;
+				AC_Record[1] = RX_BUF[ACVol];
+				AC_Record[2] = 0;
 				AC_OUT_Count[1] =0 ;
 				AC_OUT_Op(0);
 				SET_ACOUT_ERR();
@@ -948,6 +959,10 @@ void Check_AC_OUT_Sta(void)
 				K_memset(2, AC_OUT_Count,sizeof(AC_OUT_Count));
 				if(AC_OUT_Count[2] > (AC_OUT_BaseTimes))
 				{
+					AC_Record[0] = 3;
+					AC_Record[1] = RX_BUF[Powbuf];
+					AC_Record[2] = 0;
+				
 					AC_OUT_Count[2] =0 ;
 					AC_OUT_Op(0);
 					SET_ACOUT_ERR();
@@ -966,6 +981,10 @@ void Check_AC_OUT_Sta(void)
 					Clear_ACOUT_ERR();
 					if(ACOVTime[0] >= (3*Onemin))
 					{
+						AC_Record[0] = 4;
+						AC_Record[1] = (u16)RX_BUF[Powbuf];
+						AC_Record[2] = 0;
+						
 						AC_OUT_Op(0);
 						SET_ACOUT_ERR();
 					}
@@ -984,6 +1003,10 @@ void Check_AC_OUT_Sta(void)
 					Clear_ACOUT_ERR();
 					if(ACOVTime[1] >= (15*Onemin))
 					{
+						AC_Record[0] = 5;
+						AC_Record[1] = (u16)RX_BUF[Powbuf];
+						AC_Record[2] = 0;
+					
 						AC_OUT_Op(0);
 						SET_ACOUT_ERR();
 					}
