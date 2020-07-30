@@ -1457,8 +1457,8 @@ void Check_Input_Sta(void)
 
 			if((DisplayBit.Data_LowP.Byte_LowP) && (!BuzzerBit.Data_LowP.Byte_LowP))
 				DisplayBit.Data_LowP.Byte_LowP = 0;
-			if(Charge_State == CH_Ch)
-				State.Key_S = 0;
+//			if(Charge_State == CH_Ch)
+//				State.Key_S = 0;
 			if(!State.SW_DET_CH_S)
 				POW_CH_Op(1);
 		}
@@ -1470,8 +1470,8 @@ void Check_Input_Sta(void)
 		{
 			CheckInput_Count[1] = 0;
 			State.CH_S = 0;
-			if(Access_CH)
-				State.Key_S = 0;
+//			if(Access_CH)
+//				State.Key_S = 0;
 			if(!State.SW_DET_CH_S)
 				POW_CH_Op(1);
 		}

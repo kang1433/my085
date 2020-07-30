@@ -45,17 +45,17 @@
 #define	SUN_PWM		0
 #define	CH_PWM		1
 	#ifdef Power300W
-	#define   T_B3S_S		"B3S?_300W-B1\r\n" 
+	#define   T_B3S_S		"B3S?_300W-B2\r\n" 
 	#else
-	#define   T_B3S_S		"B3S?_500W-B1\r\n" 
+	#define   T_B3S_S		"B3S?_500W-B2\r\n" 
 	#endif
 #else
 #define	SUN_PWM		1
 #define	CH_PWM		0
 	#ifdef Power300W
-	#define   T_B3S_S		"B3S?_300W-A1\r\n" 
+	#define   T_B3S_S		"B3S?_300W-A2\r\n" 
 	#else
-	#define   T_B3S_S		"B3S?_500W-A1\r\n" 
+	#define   T_B3S_S		"B3S?_500W-A2\r\n" 
 	#endif
 #endif
 
