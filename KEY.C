@@ -119,8 +119,10 @@ void EXTI0_1_IRQHandler(void)
 					DisplayBit.Data_LowP.BitLowP.ACO_LowP = 0;
 					Restart_Num[Num_AC_OUT] = 0;
 				}
-//				else if((Charge_State == CH_Ch) || (Access_CH))
-//					State.Key_S = 0;
+#ifdef AC_LIMIT
+				else if((Charge_State == CH_Ch) || (Access_CH))
+					State.Key_S = 0;
+#endif
 				else
 					State.Key_S = !State.Key_S ;
 			}

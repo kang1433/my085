@@ -25,17 +25,19 @@
 #include "vk1024b.h"
 
 
-#define 	Power300W				//逆变功率限制300W
-#define 	CHARGER_5A				//市电充电限流5A时开启定义
-//#define 	CHARGE_EXCHANGE		//需对调充电口时开启定义
-//#define 	DEBUG_MODE		
-
+//#define 	Power300W			//逆变功率限制300W
+//#define 	CHARGER_5A			//市电充电限流5A时开启定义
+#define 	AC_LIMIT				//限制市电充电与AC放电同时使用
+#define 	CHARGE_WAIT			//无充电电流关断后将等待1分钟后才开启充电
+//#define 	CHARGE_EXCHANGE	//需对调充电口时开启定义
+//#define 	DEBUG_MODE		//调试使用
 
 
 #define   R_ACS_S		"ACS_" 
 #define   R_DCS_S		"DCS_" 
 #define   R_B3S_S		"B3S_" 
 #define   R_COM_S		"KCOM_" 
+#define   R_DEBUG		"DEBUG_" 
 
 #define   T_ACS_S		"ACS?\r\n" 
 #define   T_DCON_S		"DCON\r\n" 
@@ -45,17 +47,33 @@
 #define	SUN_PWM		0
 #define	CH_PWM		1
 	#ifdef Power300W
-	#define   T_B3S_S		"B3S?_300W-B2\r\n" 
+		#ifdef AC_LIMIT
+		#define   T_B3S_S		"B3S?_300W-B3\r\n" 
+		#else
+		#define   T_B3S_S		"B3S?_300W-B4\r\n" 
+		#endif
 	#else
-	#define   T_B3S_S		"B3S?_500W-B2\r\n" 
+		#ifdef AC_LIMIT
+		#define   T_B3S_S		"B3S?_500W-B3\r\n" 
+		#else
+		#define   T_B3S_S		"B3S?_500W-B4\r\n" 
+		#endif
 	#endif
 #else
 #define	SUN_PWM		1
 #define	CH_PWM		0
 	#ifdef Power300W
-	#define   T_B3S_S		"B3S?_300W-A2\r\n" 
+		#ifdef AC_LIMIT
+		#define   T_B3S_S		"B3S?_300W-A3\r\n" 
+		#else
+		#define   T_B3S_S		"B3S?_300W-A4\r\n" 
+		#endif
 	#else
-	#define   T_B3S_S		"B3S?_500W-A2\r\n" 
+		#ifdef AC_LIMIT
+		#define   T_B3S_S		"B3S?_500W-A3\r\n" 
+		#else
+		#define   T_B3S_S		"B3S?_500W-A4\r\n" 
+		#endif
 	#endif
 #endif
 

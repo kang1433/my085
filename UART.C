@@ -8,7 +8,7 @@
 
 u16 UART_RX_STA=0;
 char UART_RX_BUF[UART_REC_LEN];
-int32 RX_BUF[14] = {0};
+int32 RX_BUF[eIndex_Max] = {0};
 p_Inquire pInquire;
 
 void Uart_Init(uint32_t baud)
@@ -139,7 +139,7 @@ int32_t str2int(char *str )
 int32_t str_int_n( const char *str, uint8_t n )
 {
 	 int32_t temp = 0;
-	 const char *ptr;//ptr保存str字符串开头
+	 char *ptr = NULL;//ptr保存str字符串开头
 	 while(*str != 0)
 	 {
 		if (*str =='_' && n ) //  第n组_
@@ -152,7 +152,7 @@ int32_t str_int_n( const char *str, uint8_t n )
 		{	
 			if(*str == '-' || *str == '+' ) //如果第一个字符是正负号，
 			{ 
-				ptr = str;
+				ptr = (char*)str;
 				str++;  //则移到下一个字符
 			}
 			if ((*str < '0') || (*str > '9')) //如果当前字符不是数字
@@ -161,7 +161,7 @@ int32_t str_int_n( const char *str, uint8_t n )
 		}
 		str++;      //移到下一个字符
 	 }
-	 if (*ptr == '-')       //如果字符串是以“-”开头，则转换成其相反数
+	 if ((ptr != NULL) && (*ptr == '-'))       //如果字符串是以“-”开头，则转换成其相反数
 	 { temp = -temp;  }
 	 return temp;
 }
@@ -169,7 +169,7 @@ int32_t str_int_n( const char *str, uint8_t n )
 int32_t str_int_M( const char *str, uint8_t n )
 {
 	 int32_t temp = 0;
-	 const char *ptr;//ptr保存str字符串开头
+	 char *ptr = NULL;//ptr保存str字符串开头
 	 while(*str != 0)
 	 {
 		if (*str =='M' && n ) //  第n组_
@@ -182,7 +182,7 @@ int32_t str_int_M( const char *str, uint8_t n )
 		{	
 			if(*str == '-' || *str == '+' ) //如果第一个字符是正负号，
 			{ 
-				ptr = str;
+				ptr = (char*)str;
 				str++;  //则移到下一个字符
 			}
 			if ((*str < '0') || (*str > '9')) //如果当前字符不是数字
@@ -191,8 +191,8 @@ int32_t str_int_M( const char *str, uint8_t n )
 		}
 		str++;      //移到下一个字符
 	 }
-	 if (*ptr == '-')       //如果字符串是以“-”开头，则转换成其相反数
-	 { temp = -temp;  }
+	 if ((ptr != NULL) && (*ptr == '-'))       //如果字符串是以“-”开头，则转换成其相反数
+	 	temp = -temp;  
 	 return temp;
 }
 
@@ -239,15 +239,63 @@ void Inquire(void)
 	}
 }
 
+
+int32 Get_Max_Cell(void)
+{
+	int32 max,min;
+	max=(RX_BUF[Cell_V1]>RX_BUF[Cell_V2]) ? RX_BUF[Cell_V1] : RX_BUF[Cell_V2];
+	max=(RX_BUF[Cell_V3]>max) ? RX_BUF[Cell_V3] : max;
+	min=(RX_BUF[Cell_V1]<RX_BUF[Cell_V2]) ? RX_BUF[Cell_V1] : RX_BUF[Cell_V2];
+	min=(RX_BUF[Cell_V3]<min) ? RX_BUF[Cell_V3] : min;
+	RX_BUF[V_Diff] = max - min;
+	return max;
+}
+
+void Check_BAT_Full(void)
+{
+	static u8 bat_full_cnt[2] = {0};
+	int32 maxcell;
+	maxcell = Get_Max_Cell();
+	
+	/*采集板报过压或单体超过4250mv*/
+	if((RX_BUF[B3sState]==SAVE_BT_HV)
+	||(RX_BUF[Volbuf] > 12700)
+	||((RX_BUF[B3sState]==SAVE_FULL) && (RX_BUF[SOCbuf] >= SOC_100) && (RX_BUF[V_Diff] < 300))
+	||(maxcell >= 4250))	
+	{
+		K_memset(0, bat_full_cnt,sizeof(bat_full_cnt));
+		if(bat_full_cnt[0] > 2)
+		{
+			bat_full_cnt[0] = 0;
+			State.BAT_Full_S = 1;
+		}
+	}
+	else if((RX_BUF[SOCbuf] < SOC_95) && (maxcell < 4150))
+	{
+		K_memset(1, bat_full_cnt,sizeof(bat_full_cnt));
+		if(bat_full_cnt[1] > 2)
+		{
+			bat_full_cnt[1] = 0;
+			State.BAT_Full_S = 0;
+		}
+	}
+	else{}
+}
+
+
+
 void ACSDCSB3S_State(void)
 {
 	const char *ptemp;
 	const char *ptemp1;
 	const char *ptemp2;
+//	const char *pdebug;
+	static u8 b3s_cnt[4] = {0};
 	if(UART_RX_STA & 0x8000)
 	{
 		ptemp = strstr(UART_RX_BUF,R_B3S_S);
 		ptemp1 = strstr(UART_RX_BUF,R_DCS_S);	
+//		pdebug = strstr(UART_RX_BUF,R_DEBUG);	
 		if(ptemp != NULL)
 		{
 			RX_BUF[B3sState] = str_int_n(ptemp,2);
@@ -257,32 +305,62 @@ void ACSDCSB3S_State(void)
 			RX_BUF[Cell_V1] = str_int_n(ptemp,4);
 			RX_BUF[Cell_V2] = str_int_n(ptemp,5);
 			RX_BUF[Cell_V3] = str_int_n(ptemp,6);
+			RX_BUF[BAT_I] = str_int_n(ptemp,8);
 			RX_BUF[TrueCapy] = str_int_M(ptemp,1);
 			
 			B3S_RX_Time = B3S_OVTime;
 			BuzzerBit.Data_Bat.BitBat.B3Sc_Err = 0;
 			DisplayBit.Data_Bat.BitBat.B3Sc_Err = 0;
 			
-			if((RX_BUF[B3sState]==SAVE_NT_BT) 
+			Check_BAT_Full();
+			if((RX_BUF[V_Diff] > 600)				//压差超过600mv，电池组异常
+			||(RX_BUF[B3sState]==SAVE_NT_BT)
 			||(RX_BUF[B3sState]==SAVE_NT_FT))
 			{
-				if(!DisplayBit.Data_Bat.BitBat.BatPro)
+				b3s_cnt[0]++;
+				b3s_cnt[1] = 0;
+				if(b3s_cnt[0] > 2)
 				{
-					BuzzerBit.Data_Bat.BitBat.BatPro = 1;
-					DisplayBit.Data_Bat.BitBat.BatPro = 1;
+					b3s_cnt[0] = 0;
+					if(!DisplayBit.Data_Bat.BitBat.BatPro)
+					{
+						BuzzerBit.Data_Bat.BitBat.BatPro = 1;
+						DisplayBit.Data_Bat.BitBat.BatPro = 1;
+					}
 				}
 			}
 			else
 			{
-				BuzzerBit.Data_Bat.BitBat.BatPro = 0;
-				DisplayBit.Data_Bat.BitBat.BatPro = 0;
+				b3s_cnt[1]++;
+				b3s_cnt[0] = 0;
+				if(b3s_cnt[1] > 2)
+				{
+					b3s_cnt[1] = 0;
+					BuzzerBit.Data_Bat.BitBat.BatPro = 0;
+					DisplayBit.Data_Bat.BitBat.BatPro = 0;
+				}
 			}
-			if(RX_BUF[B3sState]==SAVE_NT_BC) 
-				State.Charge_P_S = 1;
+			
+			if(RX_BUF[B3sState]==SAVE_NT_BC)
+			{
+				b3s_cnt[2]++;
+				b3s_cnt[3] = 0;
+				if(b3s_cnt[2] > 2)
+				{
+					b3s_cnt[2] = 0;
+					State.Charge_P_S = 1;
+				}
+			}
 			else
-				State.Charge_P_S = 0;
-			if(RX_BUF[B3sState]==SAVE_BT_HV)
-				State.CH_Full_S = 1;
+			{
+				b3s_cnt[3]++;
+				b3s_cnt[2] = 0;
+				if(b3s_cnt[3] > 2)
+				{
+					b3s_cnt[3] = 0;
+					State.Charge_P_S = 0;
+				}
+			}
 			
 			if((RX_BUF[B3sState] == 1)
 			&& (RX_BUF[NowCapy] > (RX_BUF[TrueCapy] + 1000))
@@ -314,9 +392,17 @@ void ACSDCSB3S_State(void)
 		}
 		if(strstr(UART_RX_BUF,R_COM_S))
 			State.Print_S = !State.Print_S;
+//		if(pdebug != NULL)
+//		{
+//			AD_Data[AD_V_Bat] = str_int_n(pdebug,2);
+//			State.DEBUG_S = !State.DEBUG_S;
+//		}
 		USART1_ClearDate();
 	}
 }
+
+
+
 
 
 

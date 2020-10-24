@@ -10,7 +10,9 @@
 #define		SUNLDUTYTIME		3000
 #define		CHLDUTYTIME		3000
 #define		OneHour				3600000
-#define		Onemin				55000
+#define		Onemin				55000				//ms
+#define		ONEMINUTE			55					//s
+
 #define		CLOSETIME			(1*3600000)			//放置关机时间小时
 #define		LOWPCLOSETIME		((1*60000)+29000)	//低电量关机时间分钟
 
@@ -44,7 +46,7 @@ void SysTickInit(void);
 void SysTick_Update(void);
 void SysTick_Correct(u32 timeMs);
 u32 SysTimeMs(void);
-
+u32 GetRunningTime_S(void);
 void DelayMs(u16 ms);
 void SYSCLKConfig_STOP(void);
 #endif

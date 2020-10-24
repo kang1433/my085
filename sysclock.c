@@ -4,7 +4,8 @@
 /**************************************************************/
 
 #include "sysclock.h"
-
+__IO u32	RunningTime_S =0; 				  
+__IO u16	RunningTime_mS =0; 			 
 u8 	BuzzerTime = 0;					//鸣叫时间
 u8 	Key_PressTime = 0;				//按键时间
 u16 SW_DET_PressTime = 0;			//总开关按下时间
@@ -132,13 +133,22 @@ void SYSCLKConfig_STOP(void)
 	{}
 }
 
-
+u32 GetRunningTime_S(void)
+{
+	return RunningTime_S;
+}
 
 
 void SysTick_Handler(void)	//滴答定时器1MS
 {
-	SysTick_Update();
+//	SysTick_Update();
 	task_TickCut();
+	RunningTime_mS++;
+	if(RunningTime_mS >= 1000)
+	{
+		RunningTime_mS = 0;
+		RunningTime_S++;
+	}
 	if(Open_Time < 30000)
 		Open_Time++;
 //	else if(Open_Time < CLOSETIME)

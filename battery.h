@@ -118,6 +118,7 @@ extern p_Charge_State Access_CH;
 typedef struct _state		
 {
 	u8	CH_Full_S			:1;			//充满电
+	u8	BAT_Full_S			:1;			//充满电
 	u8	DCH_S				:1;			//放电标志
 	u8	CH_S				:1;			//充电标志
 	
@@ -145,7 +146,8 @@ typedef struct _state
 	u8	CH_LDuty_S			:1;			//低占空比计时标注		
 	u8	CH_NV_S			:1;			
 	u8	SUN_NV_S			:1;			
-
+	u8	CH_LC_S			:1;			
+	u8	SUN_LC_S			:1;			
 	u8	AC_OV3min_S		:1;			
 	u8	AC_OV15min_S		:1;	
 	
@@ -154,6 +156,7 @@ typedef struct _state
 	u8	DCS_Finish_S 		:1;			
 	u8	Capy_Calculate 		:1;
 	u8	Print_S				:1;			
+	u8	DEBUG_S			:1;			
 	u8	Test_Mod_S			:1;			
 	u8	DCH_P_S			:1;			
 	u8	AC_P_S				:1;			

@@ -7,7 +7,7 @@ u16 ReadBuf[LENGTH_DATA];                   //读出的数据
 
 u8 Vol_Count[7]={0};
 u8 SOC_Count[15]={0};
-u8 DYQ_Count[7]={0};
+u8 DYQ_Count[8]={0};
 u8 V12_Count[4]={0};
 u8 USB_Count[4]={0};
 u8 AC_OUT_Count[7]={0};
@@ -113,8 +113,8 @@ void Printfstatus(void)
 	printf("\r\n");
 	for(u8 k=0;k<3;k++)
 		printf(" RC%d=%d ",k,AC_Record[k]);
-	printf("200606\r\n");
-	for(u8 j=0;j<12;j++)
+	printf("201023\r\n");
+	for(u8 j=0;j<(eIndex_Max-1);j++)
 		printf(" RX%d=%d ",j,RX_BUF[j]);
 	printf("\r\n *T3=%d",ACOVTime[0]);
 	printf(" *T15=%d",ACOVTime[1]);
@@ -298,104 +298,6 @@ void V12_I_Sta(u8 n)
 }
 
 
-#if 0
-void Capacity_InVol(void)
-{
-	if(AD_Data[AD_V_Bat] <= Voltage_5) 
-	{
-		K_memset(0, Vol_Count, sizeof(Vol_Count));
-		if(Vol_Count[0] > Vol_BaseTimes)
-		{
-			Vol_Count[0] = 0;
-			State.CH_Full_S = 0;
-			Capacity=Capacity_0;
-			if((!DisplayBit.Data_LowP.BitLowP.BAT_LowP)&&(Charge_State == CH_None))
-			{
-				BuzzerBit.Data_LowP.BitLowP.BAT_LowP = 1;
-				DisplayBit.Data_LowP.BitLowP.BAT_LowP = 1;
-			}
-		}
-	}
-	else if(AD_Data[AD_V_Bat] <= Voltage_20) 
-	{
-		K_memset(1, Vol_Count, sizeof(Vol_Count));
-		if(Vol_Count[1] > Vol_BaseTimes)
-		{
-			Vol_Count[1] = 0;
-			State.CH_Full_S = 0;
-			if(!State.DCH_P_S)//未DC带载到电量低
-			{
-				Clear_LowP(LOWP5);
-				Capacity=Capacity_5;
-			}
-		}
-	}
-	else if(AD_Data[AD_V_Bat] <= Voltage_40) 
-	{
-		K_memset(2, Vol_Count, sizeof(Vol_Count));
-		if(Vol_Count[2] > Vol_BaseTimes)
-		{
-			Vol_Count[2] = 0;
-			State.CH_Full_S = 0;
-			if(!State.DCH_P_S)//未DC带载到电量低
-			{
-				Clear_LowP(LOWP5);
-				Capacity=Capacity_20;
-			}
-		}
-	}
-	else if(AD_Data[AD_V_Bat] <= Voltage_60) 
-	{
-		K_memset(3, Vol_Count, sizeof(Vol_Count));
-		if(Vol_Count[3] > Vol_BaseTimes)
-		{
-			Vol_Count[3] = 0;
-			State.CH_Full_S = 0;
-			if((!State.DCH_P_S) && (!State.AC_P_S))	//未DC带载到电量低
-			{
-				Clear_LowP(LOWP_ALL);
-				Capacity=Capacity_40;
-			}
-		}
-	}
-	else if(AD_Data[AD_V_Bat] <= Voltage_80) 
-	{
-		K_memset(4, Vol_Count, sizeof(Vol_Count));
-		if(Vol_Count[4] > Vol_BaseTimes)
-		{
-			Vol_Count[4] = 0;
-			State.CH_Full_S = 0;
-			if((!State.DCH_P_S) && (!State.AC_P_S))
-			{
-				Clear_LowP(LOWP_ALL);
-				Capacity=Capacity_60;
-			}
-		}
-	}	
-	else if(AD_Data[AD_V_Bat] < Voltage_90) 
-	{
-		K_memset(5, Vol_Count, sizeof(Vol_Count));
-		if(Vol_Count[5] > Vol_BaseTimes)
-		{
-			Vol_Count[5] = 0;
-			State.CH_Full_S = 0;
-			Clear_LowP(LOWP_ALL);
-			if(!State.AC_P_S)
-				Capacity=Capacity_80;
-		}
-	}
-	else 
-	{
-		K_memset(6, Vol_Count, sizeof(Vol_Count));
-		if(Vol_Count[6] > Vol_BaseTimes)
-		{
-			Vol_Count[6] = 0;
-			Clear_LowP(LOWP_ALL);
-			Capacity=Capacity_100;
-		}
-	}
-}
-#endif
 
 void Capacity_Init(void)
 {	
@@ -406,7 +308,7 @@ void Capacity_Init(void)
 		if(State.B3S_Finish_S)
 		{
 			State.B3S_Finish_S= 0;
-			if((RX_BUF[SOCbuf] <= 0) || (RX_BUF[SOCbuf] > 1001))
+			if((RX_BUF[SOCbuf] < 0) || (RX_BUF[SOCbuf] > 1001))
 				return;
 			if(RX_BUF[SOCbuf] < (SOC_5-SOC_Rang)) 
 			{
@@ -488,14 +390,25 @@ void Capacity_Init(void)
 
 void Check_Capacity_Sta(void)
 {	
-	int32 max,min;
-	if(AD_Data[AD_V_Bat] >= (Voltage_100+50)) 
+	static u8 fullcnt[2]= {0};
+
+	if((AD_Data[AD_V_Bat] >= (Voltage_100+100))
+	||(State.BAT_Full_S))
 	{
-		K_memset(13, SOC_Count,sizeof(SOC_Count));
-		if(SOC_Count[13] > (2*SOC_BaseTimes))
+		K_memset(0, fullcnt,sizeof(fullcnt));
+		if(fullcnt[0] > (2*SOC_BaseTimes))
 		{
-			SOC_Count[13] = 0;
+			fullcnt[0] = 0;
 			State.CH_Full_S = 1;
+		}
+	}
+	else
+	{
+		K_memset(0, fullcnt,sizeof(fullcnt));
+		if(fullcnt[0] > (2*SOC_BaseTimes))
+		{
+			fullcnt[0] = 0;
+			State.CH_Full_S = 0;
 		}
 	}
 	/*未接受到采集板信息与*********
@@ -514,10 +427,8 @@ void Check_Capacity_Sta(void)
 		if(State.B3S_Finish_S)
 		{
 			State.B3S_Finish_S = 0;
-			if((RX_BUF[SOCbuf] <= 0) || (RX_BUF[SOCbuf] > 1001))
+			if((RX_BUF[SOCbuf] < 0) || (RX_BUF[SOCbuf] > 1001))
 				return;
-			if(RX_BUF[SOCbuf] < SOC_95)
-				State.CH_Full_S = 0;
 			if(RX_BUF[SOCbuf] <= SOC_0)
 			{
 				K_memset(0, SOC_Count,sizeof(SOC_Count));
@@ -680,16 +591,6 @@ void Check_Capacity_Sta(void)
 					SOC_Count[12] = 0;
 					Clear_LowP(LOWP_ALL);
 					Capacity=Capacity_100;
-					if((RX_BUF[B3sState]==SAVE_FULL) && (RX_BUF[SOCbuf] >= SOC_100))
-					{
-						max=(RX_BUF[Cell_V1]>RX_BUF[Cell_V2]) ? RX_BUF[Cell_V1] : RX_BUF[Cell_V2];
-						max=(RX_BUF[Cell_V3]>max) ? RX_BUF[Cell_V3] : max;
-						min=(RX_BUF[Cell_V1]<RX_BUF[Cell_V2]) ? RX_BUF[Cell_V1] : RX_BUF[Cell_V2];
-						min=(RX_BUF[Cell_V3]<min) ? RX_BUF[Cell_V3] : min;
-						RX_BUF[V_Diff] = max - min;
-						if(RX_BUF[V_Diff] < 300)//压差正常，置位充满
-							State.CH_Full_S = 1;
-					}
 				}
 			}
 		}
@@ -745,6 +646,7 @@ void Init_DYQ(void)
 }
 void Check_DYQ_Sta(void)
 {
+	static u8 DYQ_Cnt=0;
 	if(State.DYQ_S)
 	{
 		P_I_DYQ_Vau = P_I_DYQ;
@@ -763,7 +665,7 @@ void Check_DYQ_Sta(void)
 			P_I_DYQ_Vau += 5.36*(AD_Data[AD_V_Bat] - 12400);
 		}
 		
-		if((AD_Data[AD_V_Bat] > (Voltage_100+100)) || ((AD_Data[AD_V_DYQ] > DYQ_utmost) && (Uptime[DYQ_Time] > 1000)))
+		if((AD_Data[AD_V_DYQ] > DYQ_utmost) && (Uptime[DYQ_Time] > 1000))
 		{
 			K_memset(0, DYQ_Count,sizeof(DYQ_Count));
 			if(DYQ_Count[0] > DYQ_BaseTimes)
@@ -837,6 +739,21 @@ void Check_DYQ_Sta(void)
 				DYQ_OUT_State = Out_None;
 				State.H_DYQIFAN_S = 0;
 				Clear_DYQ_ERR();
+
+				/*无充电，电池有充电电流时*/
+				if((RX_BUF[BAT_I] < (-300)) && (!State.CH_Ch_S) && (!State.SUN_Ch_S))
+				{
+					DYQ_Cnt++;
+					if(DYQ_Cnt > 10)
+					{
+						DYQ_Cnt = 0;
+						DYQ_Op(0);
+						Restart_Num[Num_DYQ] = 5;
+						SET_DYQ_ERR();
+					}
+				}
+				else 
+					DYQ_Cnt = 0;
 			}
 		}
 	}
@@ -1071,20 +988,22 @@ void Check_Charge_Sta(void)
 			}
 		}		
 	}
-	else if (State.H_Temp_S)
+	else if ((State.H_Temp_S) || (State.Charge_P_S))
 	{
-		if(State.CH_Ch_S)
+		if((State.CH_Ch_S) || (Access_CH == CH_Ch))
 		{
-			Charger_Op(0,CH_PWM,DOWN_Dutycycle);
+			if(State.CH_Ch_S)
+				Charger_Op(0,CH_PWM,DOWN_Dutycycle);
 			if(!DisplayBit.Data_IErr.BitIErr.CH_TErr)
 			{
 				BuzzerBit.Data_IErr.BitIErr.CH_TErr = 1;
 				DisplayBit.Data_IErr.BitIErr.CH_TErr = 1;
 			}
 		}
-		if(State.SUN_Ch_S)
+		if((State.SUN_Ch_S) || (Access_SUN == SUN_Ch))
 		{
-			Charger_Op(0,SUN_PWM,DOWN_Dutycycle);
+			if(State.SUN_Ch_S)
+				Charger_Op(0,SUN_PWM,DOWN_Dutycycle);
 			if(!DisplayBit.Data_IErr.BitIErr.SUN_TErr)
 			{
 				BuzzerBit.Data_IErr.BitIErr.SUN_TErr = 1;
@@ -1093,7 +1012,6 @@ void Check_Charge_Sta(void)
 		}
 	}
 	else if ((State.CH_Full_S) 
-		|| (State.Charge_P_S)
 		|| (DisplayBit.Data_Bat.BitBat.BatPro)
 		|| (DisplayBit.Data_Bat.BitBat.B3Sc_Err))
 	{
@@ -1235,7 +1153,12 @@ void Check_Charge_Sta(void)
 					Charger_Op(1,CH_PWM,Charge_Dutycycle);
 				}
 				else
+				{
+#ifdef CHARGE_WAIT
+					State.CH_LC_S = 1;
+#endif
 					Charger_Op(0,CH_PWM,DOWN_Dutycycle);
+				}
 			}
 #else
 		 	if(AD_Data[AD_I_Charge] >= CH_I_Pro)		//充电过流
@@ -1277,6 +1200,9 @@ void Check_Charge_Sta(void)
 				if(CH_I_Count[3] > 2*CH_IBaseTimes)
 				{
 					CH_I_Count[3] = 0;
+#ifdef CHARGE_WAIT
+					State.CH_LC_S = 1;
+#endif
 					Clear_CH_ERR();
 					Charger_Op(0,CH_PWM,DOWN_Dutycycle);
 				}
@@ -1413,7 +1339,12 @@ void Check_Charge_Sta(void)
 					Charger_Op(1,SUN_PWM,Charge_Dutycycle);
 				}
 				else
+				{
+#ifdef CHARGE_WAIT
+					State.SUN_LC_S = 1;
+#endif
 					Charger_Op(0,SUN_PWM,DOWN_Dutycycle);
+				}
 			}
 		}
 		else	//没有在充电
@@ -1457,8 +1388,10 @@ void Check_Input_Sta(void)
 
 			if((DisplayBit.Data_LowP.Byte_LowP) && (!BuzzerBit.Data_LowP.Byte_LowP))
 				DisplayBit.Data_LowP.Byte_LowP = 0;
-//			if(Charge_State == CH_Ch)
-//				State.Key_S = 0;
+#ifdef AC_LIMIT
+			if(Charge_State == CH_Ch)
+				State.Key_S = 0;
+#endif
 			if(!State.SW_DET_CH_S)
 				POW_CH_Op(1);
 		}
@@ -1470,8 +1403,10 @@ void Check_Input_Sta(void)
 		{
 			CheckInput_Count[1] = 0;
 			State.CH_S = 0;
-//			if(Access_CH)
-//				State.Key_S = 0;
+#ifdef AC_LIMIT
+			if(Access_CH)
+				State.Key_S = 0;
+#endif
 			if(!State.SW_DET_CH_S)
 				POW_CH_Op(1);
 		}
@@ -1502,13 +1437,17 @@ void Check_Input_Sta(void)
 void Check_TempFAN(void)
 {
 	GetTemperature();
+
 	if(AD_Data[AD_NTC] >= AC_P_TEMP)
 		State.H_Temp_S = 1;
 	else if(AD_Data[AD_NTC] < AC_PRe_TEMP)
 	{
 		State.H_Temp_S = 0;
-		BuzzerBit.Data_IErr.Byte_IErr &= 0X77;	//清零充电器与太阳能接口高温告警
-		DisplayBit.Data_IErr.Byte_IErr &= 0X77;
+		if(!State.Charge_P_S)
+		{
+			BuzzerBit.Data_IErr.Byte_IErr &= 0X77;	//清零充电器与太阳能接口高温告警
+			DisplayBit.Data_IErr.Byte_IErr &= 0X77;
+		}
 	}
 	
 	if(AD_Data[AD_NTC] >= FAN_ON_TEMP)
@@ -1702,6 +1641,9 @@ void Operate_AC_OUT(void)
 void Operate_SUN_Ch(void)
 {
 	u8 SUN_ErrTimes;
+#ifdef CHARGE_WAIT
+	static u32 sunlowcur_restar = 0;
+#endif
 	if(!State.SUN_Ch_S)
 	{
 		/*太阳能接入电压正常*/
@@ -1712,11 +1654,23 @@ void Operate_SUN_Ch(void)
 			if(SUN_Count[1] > CH_NorTimes)
 			{
 				SUN_Count[1] =0 ;
+#ifdef CHARGE_WAIT
+				if(State.SUN_LC_S)
+				{
+					State.SUN_LC_S = 0;
+					sunlowcur_restar = 1+ GetRunningTime_S();
+				}
+				if((sunlowcur_restar > 0) && ((sunlowcur_restar + ONEMINUTE) < GetRunningTime_S()))
+					sunlowcur_restar = 0;	
+#endif
 				State.SUN_NV_S = 1;
 				Access_SUN = SUN_Ch;
 				BuzzerBit.Data_IErr.BitIErr.SUN_VErr = 0;
 				DisplayBit.Data_IErr.BitIErr.SUN_VErr = 0;
 				if  ((!State.CH_Full_S)
+#ifdef CHARGE_WAIT
+				&& (sunlowcur_restar == 0)
+#endif
 				&& (!State.CH_Ch_S)
 				&& (!State.Charge_P_S)
 				&& (!State.H_Temp_S)
@@ -1796,10 +1750,14 @@ void Operate_SUN_Ch(void)
 			if(SUN_Count[3] > CH_NorTimes)
 			{
 				SUN_Count[3] =0 ;
-				BuzzerBit.Data_IErr.Byte_IErr &= 0x8f;//清零太阳能Err VErr OIErr位
-				DisplayBit.Data_IErr.Byte_IErr &= 0x8f;
+				BuzzerBit.Data_IErr.Byte_IErr &= 0x0f;//清零太阳能Err VErr OIErr位
+				DisplayBit.Data_IErr.Byte_IErr &= 0x0f;
 				State.SUN_LDuty_S = 0;
 				State.SUN_NV_S = 0;
+#ifdef CHARGE_WAIT
+				State.SUN_LC_S = 0;
+				sunlowcur_restar = 0;	
+#endif
 				SUN_LowDuty_Time = 0;
 				Restart_Num[Num_SUN_Ch] = 0;
 				Access_SUN = CH_None;
@@ -1812,6 +1770,10 @@ void Operate_SUN_Ch(void)
 void Operate_CH_Ch(void)
 {
 	u8 CH_ErrTimes;
+#ifdef CHARGE_WAIT
+	static u32 chlowcur_restar = 0;
+#endif
+
 	if(State.Test_Mod_S)
 	{
 		C_V_Charger = C_V_Charger_Test;
@@ -1837,11 +1799,23 @@ void Operate_CH_Ch(void)
 			if(CH_Count[1] > (CH_NorTimes+1))
 			{
 				CH_Count[1] =0 ;
+#ifdef CHARGE_WAIT
+				if(State.CH_LC_S)
+				{
+					State.CH_LC_S = 0;
+					chlowcur_restar = 1+ GetRunningTime_S();
+				}
+				if((chlowcur_restar > 0) && ((chlowcur_restar + ONEMINUTE) < GetRunningTime_S()))
+					chlowcur_restar = 0;
+#endif
 				Access_CH = CH_Ch;
 				State.CH_NV_S = 1;
 				BuzzerBit.Data_IErr.BitIErr.CH_Verr = 0;
 				DisplayBit.Data_IErr.BitIErr.CH_Verr = 0;
 				if  ((!State.CH_Full_S) 
+#ifdef CHARGE_WAIT
+				&& (chlowcur_restar == 0)
+#endif
 				&& (!State.Charge_P_S)
 				&& (!State.H_Temp_S)
 				&& (!DisplayBit.Data_Bat.BitBat.BatPro)
@@ -1930,9 +1904,13 @@ void Operate_CH_Ch(void)
 			if(CH_Count[3] > CH_NorTimes)
 			{
 				CH_Count[3] =0 ;
-				BuzzerBit.Data_IErr.Byte_IErr &= 0xf8;	//清零充电器Err VErr OIErr位
-				DisplayBit.Data_IErr.Byte_IErr &= 0xf8;
+				BuzzerBit.Data_IErr.Byte_IErr &= 0xf0;	//清零充电器Err VErr OIErr位
+				DisplayBit.Data_IErr.Byte_IErr &= 0xf0;
 				State.CH_NV_S = 0;
+#ifdef CHARGE_WAIT
+				State.CH_LC_S = 0;
+				chlowcur_restar = 0;
+#endif
 				Restart_Num[Num_CH_Ch] = 0;
 				Access_CH = CH_None;
 				Operate_SUN_Ch();
